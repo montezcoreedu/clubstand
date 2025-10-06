@@ -1,0 +1,45 @@
+<?php
+    $getMemberId = $_GET['id'];
+    $member_query = "SELECT * FROM members WHERE MemberId = '$getMemberId'";
+    $member_result = mysqli_query($conn, $member_query);
+    $member = mysqli_fetch_assoc($member_result);
+
+    $MemberId = $member['MemberId'];
+    $LastName = $member['LastName'];
+    $FirstName = $member['FirstName'];
+    $Suffix = $member['Suffix'];
+    $Position = $member['Position'];
+    $EmailAddress = $member['EmailAddress'];
+    $CellPhone = $member['CellPhone'];
+    $GradeLevel = $member['GradeLevel'];
+    $Birthdate_SQL = $member['Birthdate'];
+    $Gender = $member['Gender'];
+    $Ethnicity = $member['Ethnicity'];
+    $ShirtSize = $member['ShirtSize'];
+    $Street = $member['Street'];
+    $City = $member['City'];
+    $State = $member['State'];
+    $Zip = $member['Zip'];
+    $MembershipYear = $member['MembershipYear'];
+    $MembershipTier = $member['MembershipTier'];
+    $School = $member['School'];
+    $PrimaryContactName = $member['PrimaryContactName'];
+    $PrimaryContactPhone = $member['PrimaryContactPhone'];
+    $PrimaryContactEmail = $member['PrimaryContactEmail'];
+    $SecondaryContactName = $member['SecondaryContactName'];
+    $SecondaryContactPhone = $member['SecondaryContactPhone'];
+    $SecondaryContactEmail = $member['SecondaryContactEmail'];
+    $BAA_Contributor = $member['BAA_Contributor'];
+    $BAA_Leader = $member['BAA_Leader'];
+    $BAA_Advocate = $member['BAA_Advocate'];
+    $BAA_Capstone = $member['BAA_Capstone'];
+    $MemberPhoto = $member['MemberPhoto'];
+    $LockAccess = $member['LockAccess'];
+    $RegistrationKey = $member['RegistrationKey'];
+    $RegistrationCompleted = $member['RegistrationCompleted'];
+    $Username = $member['Username'];
+    $Password = $member['Password'];
+    $NextMembership = $member['NextMembership'];
+    $MemberStatus = $member['MemberStatus'];
+
+    $Birthdate = date('n/j/Y', strtotime($Birthdate_SQL));

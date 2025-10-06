@@ -1,0 +1,396 @@
+body {
+    font-family: avenir-regular, sans-serif;
+    font-size: 1em;
+    line-height: 1.4;
+    background-color: rgb(246, 246, 246);
+    padding: 0;
+    margin: 0;
+}
+
+*, ::after, ::before {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6, th, b, .progress-data span {
+    font-family: avenir-bold, sans-serif;
+}
+
+a {
+    color: rgb(10, 46, 127);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+ul, li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+input, textarea, select {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 4px;
+}
+
+button {
+    font-family: avenir-bold, sans-serif;
+    font-size: 14px;
+    color: rgb(48, 48, 48);
+    padding: 6px 12px;
+    background-color: rgb(198, 198, 198);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(178, 178, 178);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 4px 5px;
+}
+
+thead th {
+    background-color: #ececec;
+}
+
+th, tr td {
+    border-bottom: 1px solid #ccc;
+}
+
+#wrapper {
+    width: 100%;
+    max-width: 1120px;
+    padding: 1rem;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+}
+
+.message {
+    border-left: 3px solid;
+    padding: 6px 10px;
+}
+
+.comment {
+    border-left-color: rgb(3, 100, 148);
+    background-color: rgb(187, 217, 243);
+}
+
+.error {
+    border-left-color: rgb(148, 104, 3);
+    background-color: rgb(243, 236, 187);
+}
+
+.success {
+    border-left-color: rgb(76, 148, 3);
+    background-color: rgb(220, 243, 187);
+}
+
+.status.green {
+    color: rgb(76, 148, 3);
+}
+
+.status.yellow {
+    color: rgb(148, 80, 3);
+}
+
+.actions {
+    margin-top: 10px;
+}
+
+/* jQuery UI */
+.ui-helper-hidden-accessible {
+    display: none;
+}
+
+.ui-state-disabled {
+    cursor: not-allowed;
+}
+
+.ui-state-disabled:hover {
+    opacity: 0;
+}
+
+ul.subtabs {
+    display: block;
+    list-style: none;
+    margin: 1.5em 0;
+    padding: 0;
+    width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+ul.subtabs li {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+ul.subtabs li a {
+    display: block;
+    font-family: avenir-bold, sans-serif;
+    font-size: 14px;
+    color: rgb(102, 102, 102);
+    line-height: normal;
+    padding: 6px 18px;
+    margin: 0 10px 0 0;
+    background-color: rgb(245, 245, 245);
+    border: 1px solid rgb(208, 208, 208);
+}
+
+ul.subtabs li.ui-tabs-active a {
+    color: rgb(255, 255, 255);
+    background-color: rgb(29, 82, 188);
+}
+
+.ui-datepicker {
+    font-size: 14px;
+    text-align: center;
+    width: 240px;
+    padding: 8px;
+    margin-top: 4px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(204, 204, 204);
+}
+
+#ui-datepicker-div {
+    display: none;
+}
+
+.ui-datepicker .ui-datepicker-header {
+    position: relative;
+    padding: 0.2em 0;
+}
+
+.ui-datepicker .ui-datepicker-title {
+    margin: 0 2.3em;
+    line-height: 1.8em;
+    text-align: center;
+}
+
+.ui-datepicker .ui-datepicker-prev {
+    left: 1px;
+}
+
+.ui-datepicker .ui-datepicker-next {
+    right: 1px;
+}
+
+.ui-icon-circle-triangle-w {
+    display: block;
+    background-size: 100% 100%;
+    background-image: url(../images/caret-left-solid-calendar.svg);
+    width: auto;
+    height: 16px;
+    text-indent: -99999px;
+    opacity: 0.4;
+    overflow: hidden;
+}
+
+.ui-icon-circle-triangle-e {
+    display: block;
+    background-size: 100% 100%;
+    background-image: url(../images/caret-right-solid-calendar.svg);
+    width: auto;
+    height: 16px;
+    text-indent: -99999px;
+    opacity: 0.4;
+    overflow: hidden;
+}
+
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next {
+    position: absolute;
+    top: 2px;
+    width: 1.8em;
+    height: 1.8em;
+}
+
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next {
+    position: absolute;
+    top: 6.8px;
+    width: 1.8em;
+    height: 1.8em;
+}
+
+.ui-icon-circle-triangle-w:hover {
+    opacity: 1;
+}
+
+.ui-icon-circle-triangle-e:hover {
+    opacity: 1;
+}
+
+.ui-datepicker th, .ui-datepicker td {
+    border: none;
+}
+
+/* Columns */
+.responsive-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 840px) {
+    .responsive-container {
+        flex-direction: column;
+    }
+
+    .left-column,
+    .right-column {
+        flex: 1 1 50%;
+    }
+}
+
+.right-column img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+/* Report Pills */
+.report-pills {
+    display: flex;
+    align-items: center;
+    column-gap: 0.6rem;
+    margin: 1.2rem 0;
+}
+
+.report-pill {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 4px;
+}
+
+.report-pill .data {
+    display: block;
+    color: rgb(5, 83, 131);
+    padding: 2.5px 6px;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.report-pill .title {
+    display: block;
+    padding: 2.5px 6px;
+}
+
+/* Contact Box */
+.column_box_light_gray {
+    background-color: rgb(238, 238, 238);
+    padding: 8px;
+    margin: 2rem 0;
+}
+
+.column_box_light_gray h2, .column_box_light_gray h3 {
+    padding-bottom: 0.5rem;
+    margin: 0;
+}
+
+.column_box_light_gray h2 {
+    font-family: avenir-bold, sans-serif;
+}
+
+#bannerImg {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+/* Registration Form */
+#container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+}
+
+.sidebar {
+    min-width: 220px;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 0 10px;
+    margin: 10px 0;
+    border-left: 3px solid rgb(240, 240, 240);
+    cursor: pointer;
+}
+
+.sidebar li.active {
+    border-left-color: rgb(40, 152, 5);
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    #wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        text-align: left;
+    }
+
+    .content {
+        padding: 20px;
+    }
+}
+
+/* Footer */
+footer {
+    padding: 1rem;
+    margin-top: 2.5rem;
+    background-color: rgb(10, 46, 127);
+}
+
+footer .container {
+    width: 100%;
+    max-width: 1120px;
+    margin: auto;
+}
+
+footer a {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    padding-right: 1em;
+    padding-left: 1em;
+}

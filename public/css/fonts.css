@@ -1,0 +1,14 @@
+@font-face {
+    font-family: avenir-regular;
+    src: url(../../fonts/avenir-regular.otf);
+}
+
+@font-face {
+    font-family: avenir-bold;
+    src: url(../../fonts/avenir-bold.otf);
+}
+
+@font-face {
+    font-family: pacifico-regular;
+    src: url(../../fonts/pacifico-regular.ttf);
+}

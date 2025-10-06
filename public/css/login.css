@@ -1,0 +1,126 @@
+body {
+    font-family: avenir-regular, sans-serif;
+    font-size: 0.920rem;
+    color: rgb(48, 48, 48);
+    line-height: 1.4;
+    padding: 0;
+    margin: 0;
+}
+
+*, ::after, ::before {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6, th, b {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+a {
+    color: rgb(10, 46, 127);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.message {
+    border-left: 4px solid;
+    padding: 6px 10px;
+    margin-bottom: 1rem;
+}
+
+.error {
+    border-left-color: rgb(148, 104, 3);
+    background-color: rgb(243, 236, 187);
+}
+
+.success {
+    border-left-color: rgb(76, 148, 3);
+    background-color: rgb(220, 243, 187);
+}
+
+.auth-form {
+    width: 380px;
+    padding-top: 4rem;
+    padding-bottom: 1.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin: 0 auto;
+}
+
+.auth-form .img-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.8rem;
+}
+
+.auth-form .img-header img {
+    max-width: 120px;
+}
+
+.auth-form h2 {
+    letter-spacing: -0.8px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.auth-form form {
+    padding: 1rem;
+    background-color: #f6f8fa;
+    border: 0.0625rem solid rgba(209, 217, 224, 0.7);
+    border-radius: 0.375rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    display: block;
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 5px 12px;
+    border: 1px solid rgb(209, 217, 224);
+    border-radius: 6px;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.auth-form button, .auth-form .btn-link {
+    display: block;
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    line-height: 20px;
+    text-align: center;
+    padding: 8px 1rem;
+    background-color: rgb(29, 82, 188);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.auth-form button:hover, .auth-form .btn-link:hover {
+    background-color: rgb(10, 62, 166);
+}
+
+.button-group {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+}
