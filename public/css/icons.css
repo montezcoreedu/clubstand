@@ -1,0 +1,64 @@
+.icon14 {
+    width: 14px;
+    height: 14px;
+}
+
+.icon16 {
+    width: 16px;
+    height: 16px;
+}
+
+.error-icon {
+    background-image: url(../images/error.png);
+    background-size: 100% 100%;
+}
+
+.plus-icon {
+    background-image: url(../images/plus.png);
+    background-size: 100% 100%;
+}
+
+.minus-icon {
+    background-image: url(../images/minus.png);
+    background-size: 100% 100%;
+}
+
+.edit-icon {
+    background-image: url(../images/edit.png);
+    background-size: 100% 100%;
+}
+
+.delete-icon {
+    background-image: url(../images/delete.png);
+    background-size: 100% 100%;
+}
+
+.printer-icon {
+    background-image: url(../images/printer.png);
+    background-size: 100% 100%;
+}
+
+.user-add-icon {
+    background-image: url(../images/user-add.png);
+    background-size: 100% 100%;
+}
+
+.user-gray-icon {
+    background-image: url(../images/user-gray.png);
+    background-size: 100% 100%;
+}
+
+.advanced-search-icon {
+    background-image: url(../images/advanced-search.png);
+    background-size: 100% 100%;
+}
+
+.cake-icon {
+    background-image: url(../images/cake.png);
+    background-size: 100% 100%;
+}
+
+.lock-open-icon {
+    background-image: url(../images/lock-open.png);
+    background-size: 100% 100%;
+}
