@@ -7,20 +7,11 @@
 
     $conn = mysqli_init();
 
-    mysqli_real_connect(
-        $conn,
-        $servername,
-        $username,
-        $password,
-        $dbname,
-        3306,
-        NULL,
-        MYSQLI_CLIENT_SSL,
-        $ssl_ca
-    );
+    mysqli_options($conn, MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, true);
+    mysqli_ssl_set($conn, NULL, NULL, $ssl_ca, NULL, NULL);
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    if (!mysqli_real_connect($conn, $servername, $username, $password, $dbname, 3306, NULL, MYSQLI_CLIENT_SSL)) {
+        die("Connection failed: " . mysqli_connect_error());
     }
 
     date_default_timezone_set('America/New_York');
