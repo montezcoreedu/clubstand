@@ -56,7 +56,7 @@
                             WHERE a.Status = 'Present'
                             AND m.MemberStatus IN (1, 2)
                             AND Archived = 0
-                            GROUP BY m.MemberId
+                            GROUP BY m.MemberId, m.FirstName, m.LastName, m.Suffix, m.MemberPhoto
                             HAVING COUNT(*) = (
                                 SELECT COUNT(*) 
                                 FROM attendance a2 

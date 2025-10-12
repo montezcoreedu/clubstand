@@ -37,14 +37,15 @@
     $officerCount = 0;
 
     // Members with 5+ Demerit Points
-    $maxDemeritsQuery = "SELECT m.MemberId, m.FirstName, m.LastName, m.Suffix, m.GradeLevel, m.MemberPhoto, SUM(d.DemeritPoints) AS TotalPoints
-                        FROM members m
-                        JOIN demerits d ON m.MemberId = d.MemberId
-                        WHERE MemberStatus IN (1, 2)
-                        AND Archived = 0
-                        GROUP BY m.MemberId
-                        HAVING TotalPoints >= 5
-                        ORDER BY TotalPoints desc, m.LastName asc, m.FirstName";
+    $maxDemeritsQuery = "SELECT m.MemberId, m.FirstName, m.LastName, m.Suffix, m.GradeLevel, 
+            m.MemberPhoto, SUM(d.DemeritPoints) AS TotalPoints
+        FROM members m
+        JOIN demerits d ON m.MemberId = d.MemberId
+        WHERE MemberStatus IN (1, 2)
+        AND Archived = 0
+        GROUP BY m.MemberId, m.FirstName, m.LastName, m.Suffix, m.GradeLevel, m.MemberPhoto
+        HAVING TotalPoints >= 5
+        ORDER BY TotalPoints desc, m.LastName asc, m.FirstName";
     $maxDemeritsResult = $conn->query($maxDemeritsQuery);
 ?>
 <!DOCTYPE html>

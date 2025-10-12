@@ -1,5 +1,5 @@
 <?php
-include('../dbconnection.php');
+include('../../dbconnection.php');
 
 $query = "SELECT * FROM settings";
 $result = $conn->query($query);
