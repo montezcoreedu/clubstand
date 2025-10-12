@@ -13,7 +13,15 @@
     $services_result = $conn->query($services_query);
 
     // Top Service Hours DB
-    $most_hours_query = "SELECT * FROM (SELECT m.MemberId, m.LastName, m.FirstName, m.Suffix, m.MemberPhoto, SUM(ms.ServiceHours) as CumulativeServiceHours FROM members m INNER JOIN memberservicehours ms ON m.MemberId = ms.MemberId WHERE m.MemberStatus IN (1, 2) AND Archived = 0 GROUP BY m.MemberId ORDER BY m.LastName asc, m.FirstName asc) as A ORDER BY CumulativeServiceHours desc LIMIT 5";
+    $most_hours_query = "SELECT * FROM
+            (SELECT m.MemberId, m.LastName, m.FirstName, m.Suffix, m.MemberPhoto, SUM(ms.ServiceHours) as 
+            CumulativeServiceHours 
+        FROM members m
+        INNER JOIN memberservicehours ms ON m.MemberId = ms.MemberId 
+        WHERE m.MemberStatus IN (1, 2) AND Archived = 0 
+        GROUP BY m.MemberId, m.LastName, m.FirstName, m.Suffix, m.MemberPhoto
+        ORDER BY m.LastName asc, m.FirstName asc) as A 
+        ORDER BY CumulativeServiceHours desc LIMIT 5";
     $most_hours_result = $conn->query($most_hours_query);
 
     // Year Service Breakdown
