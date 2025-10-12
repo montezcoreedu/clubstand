@@ -379,6 +379,7 @@ ul.subtabs li.ui-tabs-active a {
 
 /* Footer */
 footer {
+    color: rgb(255, 255, 255);
     padding: 1rem;
     margin-top: 2.5rem;
     background-color: rgb(10, 46, 127);
@@ -388,13 +389,4 @@ footer .container {
     width: 100%;
     max-width: 1120px;
     margin: auto;
-}
-
-footer a {
-    position: relative;
-    display: inline-block;
-    font-size: 14px;
-    color: rgb(255, 255, 255);
-    padding-right: 1em;
-    padding-left: 1em;
 }
