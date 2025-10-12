@@ -153,7 +153,6 @@
                             }
                         ?>
                     </div>
-
                     <div class="right-column">
                         <img src="images/AbsenceExcuseForumBanner.png" alt="Absence Excuse Forum Banner photo" style="width: 100%; margin-bottom: 10px;">
                         <form action="send_excuse.php" method="post">
