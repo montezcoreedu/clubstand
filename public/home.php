@@ -1,7 +1,7 @@
 <?php
     include("../dbconnection.php");
     include("common/session.php");
-    include("../common/chapter_settings.php");
+    include("common/chapter_settings.php");
 
     $memberId = $_SESSION['account_id'];
 
@@ -112,9 +112,6 @@
             <div id="attendance">
                 <div class="responsive-container">
                     <div class="left-column">
-                        <div class="message comment">
-                            As a member you are required to attend at least 10 meetings per membership year. If you're going to miss a meeting, please fill out the excuse form found on this page.
-                        </div>
                         <div class="report-pills">
                             <div class="report-pill">
                                 <span class="data"><?php echo $att_percent['AttPercentage']; ?>%</span>
@@ -274,7 +271,7 @@
     </div>
     <footer>
         <div class="container">
-            <a href="https://www.berkeleyhighscfbla.net/" target="_blank" rel="noopener noreferrer">© Core Education, ClubStand</a>
+            <span>© Core Education, ClubStand</span>
         </div>
     </footer>
     <script>
