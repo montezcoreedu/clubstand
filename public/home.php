@@ -1,8 +1,11 @@
 <?php
     include("../dbconnection.php");
     include("common/session.php");
+    include("../common/chapter_settings.php");
 
     $memberId = $_SESSION['account_id'];
+
+    $required_hours = isset($chapter['MaxServiceHours']) ? $chapter['MaxServiceHours'] : '';
 
     // Member Account DB
     $query = "SELECT * FROM members WHERE MemberId = ?";
@@ -229,7 +232,7 @@
             </div>
             <div id="services">
                 <div class="message comment" style="margin-bottom: 18px;">
-                    As a member you are required to earn at least 8 service hours per membership year. Please be aware that any transfer service hours you may have will be included in the total service hours, if applicable.
+                    As a member you are required to earn at least <?= $required_hours; ?> service hours per membership year. Please be aware that any transfer service hours you may have will be included in the total service hours, if applicable.
                 </div>
                 <?php
                     if ($services_result->num_rows) {
@@ -271,7 +274,7 @@
     </div>
     <footer>
         <div class="container">
-            <a href="https://www.berkeleyhighscfbla.net/" target="_blank" rel="noopener noreferrer">© 2025 Berkeley High Future Business Leaders of America, Membership Groups & Committees</a>
+            <a href="https://www.berkeleyhighscfbla.net/" target="_blank" rel="noopener noreferrer">© Core Education, ClubStand</a>
         </div>
     </footer>
     <script>
