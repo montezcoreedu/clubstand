@@ -30,58 +30,6 @@
             $state = mysqli_real_escape_string($conn, $_POST['State']);
             $zip = mysqli_real_escape_string($conn, $_POST['Zip']);
 
-            if ($img_name) {
-                $img_ex = pathinfo($img_name, PATHINFO_EXTENSION);
-                $img_ex_lc = strtolower($img_ex);
-                $allowed_exs = array("png", "jpg", "jpeg");
-            
-                if (in_array($img_ex_lc, $allowed_exs)) {
-                    $new_img_name = uniqid("Member-", true) . '.' . $img_ex_lc;
-                    $img_upload_path = '../../MemberPhotos/' . $new_img_name;
-            
-                    if ($img_ex_lc == 'jpg' || $img_ex_lc == 'jpeg') {
-                        $src_image = imagecreatefromjpeg($tmp_name);
-                    } elseif ($img_ex_lc == 'png') {
-                        $src_image = imagecreatefrompng($tmp_name);
-                    }
-            
-                    if ($src_image) {
-                        $orig_width = imagesx($src_image);
-                        $orig_height = imagesy($src_image);
-            
-                        $max_size = 220;
-            
-                        if ($orig_width > $orig_height) {
-                            $new_width = $max_size;
-                            $new_height = intval(($orig_height / $orig_width) * $max_size);
-                        } else {
-                            $new_height = $max_size;
-                            $new_width = intval(($orig_width / $orig_height) * $max_size);
-                        }
-            
-                        $dst_image = imagecreatetruecolor($new_width, $new_height);
-            
-                        if ($img_ex_lc == 'png') {
-                            imagealphablending($dst_image, false);
-                            imagesavealpha($dst_image, true);
-                            $transparent = imagecolorallocatealpha($dst_image, 255, 255, 255, 127);
-                            imagefilledrectangle($dst_image, 0, 0, $new_width, $new_height, $transparent);
-                        }
-            
-                        imagecopyresampled($dst_image, $src_image, 0, 0, 0, 0, $new_width, $new_height, $orig_width, $orig_height);
-            
-                        if ($img_ex_lc == 'jpg' || $img_ex_lc == 'jpeg') {
-                            imagejpeg($dst_image, $img_upload_path, 120);
-                        } elseif ($img_ex_lc == 'png') {
-                            imagepng($dst_image, $img_upload_path, 4);
-                        }
-            
-                        imagedestroy($src_image);
-                        imagedestroy($dst_image);
-                    }
-                }
-            }                      
-
             $member_sql = 'UPDATE members SET ';
             if ($lastName != '') $member_sql .= '`LastName`="' . $lastName . '", ';
             if ($firstName != '') $member_sql .= '`FirstName`="' . $firstName . '", ';
@@ -101,9 +49,65 @@
             if ($state != '') $member_sql .= '`State`="' . $state . '", ';
             if ($zip != '') $member_sql .= '`Zip`="' . $zip . '", ';
 
-            if ($new_img_name != '') $member_sql .= '`MemberPhoto`="' . $new_img_name . '", ';
+            $new_img_name = '';
+            if ($img_name) {
+                $img_ex = pathinfo($img_name, PATHINFO_EXTENSION);
+                $img_ex_lc = strtolower($img_ex);
+                $allowed_exs = array("png", "jpg", "jpeg");
 
-            $member_sql .= "`memberid` = $getMemberId WHERE `members`.`memberid` = $getMemberId";
+                if (in_array($img_ex_lc, $allowed_exs)) {
+                    $new_img_name = uniqid("Member-", true) . '.' . $img_ex_lc;
+                    $img_upload_path = '../../MemberPhotos/' . $new_img_name;
+
+                    if ($img_ex_lc == 'jpg' || $img_ex_lc == 'jpeg') {
+                        $src_image = imagecreatefromjpeg($tmp_name);
+                    } elseif ($img_ex_lc == 'png') {
+                        $src_image = imagecreatefrompng($tmp_name);
+                    }
+
+                    if ($src_image) {
+                        $orig_width = imagesx($src_image);
+                        $orig_height = imagesy($src_image);
+
+                        $max_size = 220;
+
+                        if ($orig_width > $orig_height) {
+                            $new_width = $max_size;
+                            $new_height = intval(($orig_height / $orig_width) * $max_size);
+                        } else {
+                            $new_height = $max_size;
+                            $new_width = intval(($orig_width / $orig_height) * $max_size);
+                        }
+
+                        $dst_image = imagecreatetruecolor($new_width, $new_height);
+
+                        if ($img_ex_lc == 'png') {
+                            imagealphablending($dst_image, false);
+                            imagesavealpha($dst_image, true);
+                            $transparent = imagecolorallocatealpha($dst_image, 255, 255, 255, 127);
+                            imagefilledrectangle($dst_image, 0, 0, $new_width, $new_height, $transparent);
+                        }
+
+                        imagecopyresampled($dst_image, $src_image, 0, 0, 0, 0, $new_width, $new_height, $orig_width, $orig_height);
+
+                        if ($img_ex_lc == 'jpg' || $img_ex_lc == 'jpeg') {
+                            imagejpeg($dst_image, $img_upload_path, 90);
+                        } elseif ($img_ex_lc == 'png') {
+                            imagepng($dst_image, $img_upload_path, 4);
+                        }
+
+                        imagedestroy($src_image);
+                        imagedestroy($dst_image);
+                    }
+                }
+            }
+
+            if ($new_img_name != '') {
+                $member_sql .= '`MemberPhoto`="' . $new_img_name . '", ';
+            }
+
+            $member_sql = rtrim($member_sql, ', ');
+            $member_sql .= " WHERE `members`.`memberid` = $getMemberId";
             $member_query = $conn->query($member_sql);
 
             if ($member_query) {
