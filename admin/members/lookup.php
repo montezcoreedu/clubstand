@@ -242,16 +242,18 @@
                             </td>
                         </tr>
                         <tr>
-                            <td width="180"><b>Ethnicity:</b></td>
+                            <td width="180"><b>Race or Ethnicity:</b></td>
                             <td>
-                                <select name="Ethnicity">
-                                    <option value="African American" <?php if ($Ethnicity == 'African American') { echo 'selected'; } ?>>African American</option>
-                                    <option value="Asian" <?php if ($Ethnicity == 'Asian') { echo 'selected'; } ?>>Asian</option>
-                                    <option value="Caucasian" <?php if ($Ethnicity == 'Caucasian') { echo 'selected'; } ?>>Caucasian</option>
-                                    <option value="Hispanic" <?php if ($Ethnicity == 'Hispanic') { echo 'selected'; } ?>>Hispanic</option>
-                                    <option value="Native American" <?php if ($Ethnicity == 'Native American') { echo 'selected'; } ?>>Native American</option>
-                                    <option value="Other" <?php if ($Ethnicity == 'Other') { echo 'selected'; } ?>>Other</option>
-                                </select>
+                                <input list="raceList" name="Ethnicity" value="<?php echo $Ethnicity; ?>" placeholder="Type or select race or ethnicity" maxlength="100" style="width: 30%;">
+                                <datalist id="raceList">
+                                <?php
+                                    $query = "SELECT DISTINCT Ethnicity FROM members ORDER BY Ethnicity asc";
+                                    $res = $conn->query($query);
+                                    while ($row = $res->fetch_assoc()) {
+                                        echo "<option value='" . htmlspecialchars($row['Ethnicity']) . "'>";
+                                    }
+                                ?>
+                                </datalist>
                             </td>
                         </tr>
                         <tr>
