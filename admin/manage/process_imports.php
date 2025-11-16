@@ -11,48 +11,57 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_FILES['csv_file'])) {
             $fileError = $_FILES['csv_file']['error'];
-    
+
             if ($fileError == UPLOAD_ERR_OK) {
                 $file = fopen($_FILES['csv_file']['tmp_name'], 'r');
-        
-                $headers = fgetcsv($file);
-        
+
+                $headers = array_map(function($h) {
+                    return trim(str_replace(["\u{FEFF}", "\r", "\n"], '', $h));
+                }, fgetcsv($file));
+
                 $previewData = [];
                 $imported = 0;
                 $skipped = 0;
-        
+
                 while (($data = fgetcsv($file)) !== FALSE) {
+                    if (count($data) < count($headers)) {
+                        $data = array_pad($data, count($headers), null);
+                    } elseif (count($data) > count($headers)) {
+                        $data = array_slice($data, 0, count($headers));
+                    }
+
                     $row = array_combine($headers, $data);
+
                     if (!$row) {
                         $skipped++;
                         continue;
                     }
-        
+
                     $previewData[] = $row;
                 }
-        
+
                 fclose($file);
-        
+
                 $_SESSION['previewData'] = $previewData;
-        
+
                 header("Location: preview_import.php");
                 exit;
             } else {
                 $errorMessages = [
-                    UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the upload_max_filesize directive in php.ini.",
-                    UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form.",
+                    UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the upload_max_filesize directive.",
+                    UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds MAX_FILE_SIZE.",
                     UPLOAD_ERR_PARTIAL => "The file was only partially uploaded.",
                     UPLOAD_ERR_NO_FILE => "No file was uploaded.",
-                    UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
-                    UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
-                    UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload."
+                    UPLOAD_ERR_NO_TMP_DIR => "Missing temporary folder.",
+                    UPLOAD_ERR_CANT_WRITE => "Failed to write file.",
+                    UPLOAD_ERR_EXTENSION => "A PHP extension stopped the upload."
                 ];
-    
-                $errorMessage = $errorMessages[$fileError] ?? "Unknown error uploading file.";
+
+                $errorMessage = $errorMessages[$fileError] ?? "Unknown file upload error.";
                 $_SESSION['errorMessage'] = "<div class='message error'>$errorMessage</div>";
             }
         }
-    }    
+    }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'confirm') {
         if (!isset($_SESSION['previewData'])) {
@@ -66,91 +75,94 @@
         $skipped = 0;
 
         foreach ($previewData as $row) {
-            $LastName = mysqli_real_escape_string($conn, $row['LastName'] ?? NULL);
-            $FirstName = mysqli_real_escape_string($conn, $row['FirstName'] ?? NULL);
-            $Suffix = mysqli_real_escape_string($conn, $row['Suffix'] ?? NULL);
-            $Position = !empty($row['Position']) ? mysqli_real_escape_string($conn, $row['Position']) : NULL;
-            $EmailAddress = mysqli_real_escape_string($conn, $row['EmailAddress'] ?? NULL);
-            $GradeLevel = is_numeric(trim($row['GradeLevel'] ?? '')) ? (int)trim($row['GradeLevel']) : NULL;
-            $MembershipYear = is_numeric(trim($row['MembershipYear'] ?? '')) ? (int)trim($row['MembershipYear']) : NULL;
+            $cleanPhone = function($p) {
+                return preg_replace('/[^0-9]/', '', $p ?? '');
+            };
+
+            $cleanZip = function($z) {
+                return preg_replace('/[^0-9]/', '', $z ?? '');
+            };
 
             $rawBirthdate = trim($row['Birthdate'] ?? '');
             $Birthdate = NULL;
 
-            if (!empty($rawBirthdate)) {
+            if ($rawBirthdate !== "" && is_numeric($rawBirthdate) && $rawBirthdate > 30000) {
+                $Birthdate = date('Y-m-d', ($rawBirthdate - 25569) * 86400);
+            } else {
                 $formats = [
-                    'n/j/Y', 'm/d/Y',
-                    'n-j-Y', 'm-d-Y',
-                    'Y-m-d', 'Y/n/j',
-                    'Y/m/d',
-                    'F j, Y', 'M j, Y',
-                    'j F Y', 'j M Y',
-                    'm-d-y', 'm/d/y'
+                    'n/j/Y','m/d/Y','n-j-Y','m-d-Y',
+                    'Y-m-d','Y/n/j','Y/m/d',
+                    'F j, Y','M j, Y','j F Y','j M Y',
+                    'm-d-y','m/d/y'
                 ];
-
                 foreach ($formats as $format) {
                     $birthObj = DateTime::createFromFormat($format, $rawBirthdate);
-
                     if ($birthObj && $birthObj->format($format) === $rawBirthdate) {
                         $Birthdate = $birthObj->format('Y-m-d');
                         break;
                     }
                 }
-
-                if (!$Birthdate) {
-                    $timestamp = strtotime($rawBirthdate);
-                    if ($timestamp !== false) {
-                        $Birthdate = date('Y-m-d', $timestamp);
-                    }
+                if (!$Birthdate && strtotime($rawBirthdate)) {
+                    $Birthdate = date('Y-m-d', strtotime($rawBirthdate));
                 }
             }
 
-            $Gender = mysqli_real_escape_string($conn, $row['Gender'] ?? NULL);
-            $Ethnicity = mysqli_real_escape_string($conn, $row['Ethnicity'] ?? NULL);
-            $ShirtSize = mysqli_real_escape_string($conn, $row['ShirtSize'] ?? NULL);
-            $Street = mysqli_real_escape_string($conn, $row['Street'] ?? NULL);
-            $City = mysqli_real_escape_string($conn, $row['City'] ?? NULL);
-            $State = mysqli_real_escape_string($conn, $row['State'] ?? NULL);
-            $Zip = mysqli_real_escape_string($conn, $row['Zip'] ?? NULL);
-            $MembershipTier = mysqli_real_escape_string($conn, $row['MembershipTier'] ?? NULL);
-            $School = mysqli_real_escape_string($conn, $row['School'] ?? NULL);
-            $PrimaryContactName = mysqli_real_escape_string($conn, $row['PrimaryContactName'] ?? NULL);
-            $PrimaryContactPhone = mysqli_real_escape_string($conn, $row['PrimaryContactPhone'] ?? NULL);
-            $PrimaryContactEmail = mysqli_real_escape_string($conn, $row['PrimaryContactEmail'] ?? NULL);
-            $SecondaryContactName = mysqli_real_escape_string($conn, $row['SecondaryContactName'] ?? NULL);
-            $SecondaryContactPhone = mysqli_real_escape_string($conn, $row['SecondaryContactPhone'] ?? NULL);
-            $SecondaryContactEmail = mysqli_real_escape_string($conn, $row['SecondaryContactEmail'] ?? NULL);
+            $LastName = mysqli_real_escape_string($conn, trim($row['LastName'] ?? ''));
+            $FirstName = mysqli_real_escape_string($conn, trim($row['FirstName'] ?? ''));
+            $Suffix = mysqli_real_escape_string($conn, trim($row['Suffix'] ?? ''));
+            $Position = mysqli_real_escape_string($conn, trim($row['Position'] ?? ''));
+            $EmailAddress = mysqli_real_escape_string($conn, trim($row['EmailAddress'] ?? ''));
 
-            $check = $conn->query("SELECT * FROM members WHERE EmailAddress = '$EmailAddress'");
+            $Phone = $cleanPhone($row['CellPhone'] ?? '');
+            $PrimaryContactPhone = $cleanPhone($row['PrimaryContactPhone'] ?? '');
+            $SecondaryContactPhone = $cleanPhone($row['SecondaryContactPhone'] ?? '');
+            $Zip = $cleanZip($row['Zip'] ?? '');
+
+            $GradeLevel = is_numeric(trim($row['GradeLevel'] ?? '')) ? (int)$row['GradeLevel'] : "NULL";
+            $MembershipYear = is_numeric(trim($row['MembershipYear'] ?? '')) ? (int)$row['MembershipYear'] : "NULL";
+
+            $check = $conn->query("SELECT 1 FROM members WHERE EmailAddress = '$EmailAddress' LIMIT 1");
             if ($check && $check->num_rows > 0) {
                 $skipped++;
                 continue;
             }
 
             $sql = "INSERT INTO members (
-                        LastName, FirstName, Suffix, Position, EmailAddress, GradeLevel, Birthdate, Gender, Ethnicity, ShirtSize, 
-                        Street, City, State, Zip, MembershipYear, MembershipTier, School, PrimaryContactName, PrimaryContactPhone, 
-                        PrimaryContactEmail, SecondaryContactName, SecondaryContactPhone, SecondaryContactEmail
-                    ) VALUES (
-                        '$LastName', '$FirstName', '$Suffix', " . ($Position ? "'$Position'" : "NULL") . ", '$EmailAddress', $GradeLevel, " . 
-                        ($Birthdate ? "'$Birthdate'" : "NULL") . ", '$Gender', '$Ethnicity', 
-                        '$ShirtSize', '$Street', '$City', '$State', '$Zip', $MembershipYear, '$MembershipTier', '$School', 
-                        '$PrimaryContactName', '$PrimaryContactPhone', '$PrimaryContactEmail', '$SecondaryContactName', 
-                        '$SecondaryContactPhone', '$SecondaryContactEmail'
-                    )";
+                LastName, FirstName, Suffix, Position, EmailAddress, 
+                CellPhone, GradeLevel, Birthdate, Gender, Ethnicity, ShirtSize,
+                Street, City, State, Zip, MembershipYear, MembershipTier, School,
+                PrimaryContactName, PrimaryContactPhone, PrimaryContactEmail,
+                SecondaryContactName, SecondaryContactPhone, SecondaryContactEmail
+            ) VALUES (
+                '$LastName', '$FirstName', '$Suffix', " . ($Position ? "'$Position'" : "NULL") . ",
+                '$EmailAddress', '$Phone', $GradeLevel, " . ($Birthdate ? "'$Birthdate'" : "NULL") . ",
+                '" . mysqli_real_escape_string($conn, $row['Gender']) . "',
+                '" . mysqli_real_escape_string($conn, $row['Ethnicity']) . "',
+                '" . mysqli_real_escape_string($conn, $row['ShirtSize']) . "',
+                '" . mysqli_real_escape_string($conn, $row['Street']) . "',
+                '" . mysqli_real_escape_string($conn, $row['City']) . "',
+                '" . mysqli_real_escape_string($conn, $row['State']) . "',
+                '$Zip', $MembershipYear,
+                '" . mysqli_real_escape_string($conn, $row['MembershipTier']) . "',
+                '" . mysqli_real_escape_string($conn, $row['School']) . "',
+                '" . mysqli_real_escape_string($conn, $row['PrimaryContactName']) . "',
+                '$PrimaryContactPhone',
+                '" . mysqli_real_escape_string($conn, $row['PrimaryContactEmail']) . "',
+                '" . mysqli_real_escape_string($conn, $row['SecondaryContactName']) . "',
+                '$SecondaryContactPhone',
+                '" . mysqli_real_escape_string($conn, $row['SecondaryContactEmail']) . "'
+            )";
 
             if ($conn->query($sql)) {
                 $imported++;
             } else {
                 $skipped++;
                 error_log("SQL Error: " . $conn->error);
-                $_SESSION['errorMessage'] = "<div class='message error'>Error importing data: " . $conn->error . "</div>";
             }
         }
 
         unset($_SESSION['previewData']);
-
-        $_SESSION['successMessage'] = "<div class='message success'>$imported members imported successfully. $skipped skipped (duplicates or errors).</div>";
+        $_SESSION['successMessage'] = "<div class='message success'>$imported members imported successfully. $skipped skipped.</div>";
         header("Location: import_members.php");
         exit;
     }
