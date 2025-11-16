@@ -244,7 +244,7 @@
                         <tr>
                             <td width="180"><b>Race or Ethnicity:</b></td>
                             <td>
-                                <input list="raceList" name="Ethnicity" value="<?php echo $Ethnicity; ?>" placeholder="Type or select race or ethnicity" maxlength="100" style="width: 30%;">
+                                <input list="raceList" name="Ethnicity" value="<?php echo $Ethnicity; ?>" placeholder="Type or select race or ethnicity" maxlength="100" style="width: 60%;">
                                 <datalist id="raceList">
                                 <?php
                                     $query = "SELECT DISTINCT Ethnicity FROM members ORDER BY Ethnicity asc";

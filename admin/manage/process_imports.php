@@ -1,6 +1,6 @@
 <?php
+    session_start();
     include("../../dbconnection.php");
-    include("../common/session.php");
     include("../common/permissions.php");
 
     if (!in_array("Import Members", $userPermissions)) {
