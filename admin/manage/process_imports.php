@@ -22,13 +22,17 @@
                 $skipped = 0;
         
                 while (($data = fgetcsv($file)) !== FALSE) {
-                    $row = array_combine($headers, $data);
-                    if (!$row) {
+                    if (count($data) != count($headers)) {
                         $skipped++;
                         continue;
                     }
-        
-                    $previewData[] = $row;
+
+                    // Prevent memory explosion
+                    if (memory_get_usage() > 200 * 1024 * 1024) {
+                        break;
+                    }
+
+                    $previewData[] = array_combine($headers, $data);
                 }
         
                 fclose($file);
@@ -52,7 +56,7 @@
                 $_SESSION['errorMessage'] = "<div class='message error'>$errorMessage</div>";
             }
         }
-    }    
+    }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'confirm') {
         if (!isset($_SESSION['previewData'])) {
