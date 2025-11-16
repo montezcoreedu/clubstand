@@ -73,14 +73,38 @@
             $EmailAddress = mysqli_real_escape_string($conn, $row['EmailAddress'] ?? NULL);
             $GradeLevel = is_numeric(trim($row['GradeLevel'] ?? '')) ? (int)trim($row['GradeLevel']) : NULL;
             $MembershipYear = is_numeric(trim($row['MembershipYear'] ?? '')) ? (int)trim($row['MembershipYear']) : NULL;
+
             $rawBirthdate = trim($row['Birthdate'] ?? '');
-            if ($rawBirthdate) {
-                $birthdateObj = DateTime::createFromFormat('n/j/Y', $rawBirthdate)
-                            ?: DateTime::createFromFormat('m/d/Y', $rawBirthdate);
-                $Birthdate = $birthdateObj ? $birthdateObj->format('Y-m-d') : NULL;
-            } else {
-                $Birthdate = NULL;
+            $Birthdate = NULL;
+
+            if (!empty($rawBirthdate)) {
+                $formats = [
+                    'n/j/Y', 'm/d/Y',
+                    'n-j-Y', 'm-d-Y',
+                    'Y-m-d', 'Y/n/j',
+                    'Y/m/d',
+                    'F j, Y', 'M j, Y',
+                    'j F Y', 'j M Y',
+                    'm-d-y', 'm/d/y'
+                ];
+
+                foreach ($formats as $format) {
+                    $birthObj = DateTime::createFromFormat($format, $rawBirthdate);
+
+                    if ($birthObj && $birthObj->format($format) === $rawBirthdate) {
+                        $Birthdate = $birthObj->format('Y-m-d');
+                        break;
+                    }
+                }
+
+                if (!$Birthdate) {
+                    $timestamp = strtotime($rawBirthdate);
+                    if ($timestamp !== false) {
+                        $Birthdate = date('Y-m-d', $timestamp);
+                    }
+                }
             }
+
             $Gender = mysqli_real_escape_string($conn, $row['Gender'] ?? NULL);
             $Ethnicity = mysqli_real_escape_string($conn, $row['Ethnicity'] ?? NULL);
             $ShirtSize = mysqli_real_escape_string($conn, $row['ShirtSize'] ?? NULL);
