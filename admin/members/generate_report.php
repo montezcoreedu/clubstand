@@ -543,7 +543,7 @@
             $html = '
                 <ol>
                     <li style="font-size: 11px; line-height: 20px;">Open an internet browser on any web accessible device.</li>
-                    <li style="font-size: 11px; line-height: 20px">Type https://berkeleyfblamembership.com/public in the address bar of your browser. Choose "Create Account" to start the process.</li>
+                    <li style="font-size: 11px; line-height: 20px">Type https://clubstand.onrender.com/ in the address bar of your browser. Choose "Create Account" to start the process.</li>
                     <li style="font-size: 11px; line-height: 20px">To create your account, enter the registration key found below and choose a username and password that you want to use.</li>
                     <li style="font-size: 11px; line-height: 20px">When you\'re done, type in the username and password you used on the "Create Account" page.</li>
                 </ol>';
