@@ -2,7 +2,6 @@
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
-    include("../common/permissions.php");
     require_once('../../TCPDF/tcpdf.php');
 
     $adminId = $_SESSION['account_id'];
@@ -629,7 +628,14 @@
                 }
             break;
             case 'portalletter':
-                $query = "SELECT q.SelectId, m.* FROM quick_select q INNER JOIN members m ON q.MemberId = m.MemberId WHERE q.AdminId = $adminId AND q.AddedOn >= NOW() - INTERVAL 1 AND m.RegistrationKey IS NOT NULL AND m.RegistrationCompleted = 0 DAY ORDER BY m.LastName asc, m.FirstName asc";
+                $query = "SELECT q.SelectId, m.* 
+                    FROM quick_select q 
+                    INNER JOIN members m ON q.MemberId = m.MemberId 
+                    WHERE q.AdminId = $adminId 
+                        AND q.AddedOn >= NOW() - INTERVAL 1 DAY
+                        AND m.RegistrationKey IS NOT NULL 
+                        AND m.RegistrationCompleted = 0 
+                    ORDER BY m.LastName asc, m.FirstName asc";
                 $result = $conn->query($query);
 
                 while ($row = $result->fetch_assoc()) {

@@ -1,6 +1,6 @@
 <?php
     $accountId = $_SESSION['account_id'];
-
+    
     function getUserPermissions($accountId, $conn) {
         $stmt = $conn->prepare("SELECT AccountGroup FROM accounts WHERE AccountId = ?");
         $stmt->bind_param("i", $accountId);
