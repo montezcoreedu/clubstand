@@ -21,7 +21,7 @@
     $mail->Host = 'smtp-relay.brevo.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'coresolutionsedu@gmail.com';
-    $mail->Password = getenv('BREVO_SMTP_PASSWORD');
+    $mail->Password = getenv('BREVO_SMTP_PASSWORD'); // TEST
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
     $mail->setFrom('coresolutionsedu@gmail.com', $chapter['ChapterName'] . ' ByLaw Committee');
