@@ -20,10 +20,10 @@
     $mail->isSMTP();
     $mail->Host = 'smtp-relay.brevo.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'coresolutionsedu@gmail.com';
+    $mail->Username = getenv('BREVO_SMTP_USER');
     $mail->Password = getenv('BREVO_SMTP_PASSWORD');
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port = 465;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port = 587;
     $mail->setFrom('coresolutionsedu@gmail.com', $chapter['ChapterName'] . ' ByLaw Committee');
 
     $adminName = $_SESSION['FirstName'] . ' ' . $_SESSION['LastName'];
