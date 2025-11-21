@@ -22,8 +22,8 @@
     $mail->SMTPAuth = true;
     $mail->Username = 'coresolutionsedu@gmail.com';
     $mail->Password = getenv('BREVO_SMTP_PASSWORD');
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // NEW TEST
-    $mail->Port = 587;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port = 465;
     $mail->setFrom('coresolutionsedu@gmail.com', $chapter['ChapterName'] . ' ByLaw Committee');
 
     $adminName = $_SESSION['FirstName'] . ' ' . $_SESSION['LastName'];
@@ -175,6 +175,8 @@
                 </li>
             </ul>
             <h2>Add Demerit</h2>
+            <?php
+            var_dump(getenv('BREVO_SMTP_PASSWORD'));?>
             <form method="post">
                 <table class="form-table">
                     <tbody>
