@@ -105,7 +105,8 @@
                         'cc' => [
                             ['email' => $PrimaryContactEmail],
                             ['email' => 'smalleys@bcsdschools.net'],
-                            ['email' => 'lampkinl@bcsdschools.net']
+                            ['email' => 'lampkinl@bcsdschools.net'],
+                            ['email' => 'montezbhsfbla@gmail.com']
                         ],
                         'replyTo' => [
                             'email' => 'montezbhsfbla@gmail.com'
