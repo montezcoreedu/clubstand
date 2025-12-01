@@ -17,6 +17,13 @@
 
     $adminName = $_SESSION['FirstName'] . ' ' . $_SESSION['LastName'];
 
+    if (!isset($_SESSION['successMessage'])) {
+        $_SESSION['successMessage'] = "";
+    }
+    if (!isset($_SESSION['errorMessage'])) {
+        $_SESSION['errorMessage'] = "";
+    }
+
     if (!empty($_GET['id']) && $check_url) {
         include("../common/membercommon.php");
         
@@ -44,52 +51,52 @@
                     $ReceivedDate = date('n/j/Y', strtotime($_POST['DemeritDate']));
                     $PointsAdded = $points['CumulativePoints'] + $demeritPoints;
 
-                    $mailBodyHtml = '
-                        <table align="center" border="0" cellpadding="3" cellspacing="1" 
-                            style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Dear '.$FirstName.' '.$LastName.',
-                                            <br><br>
-                                            You have recently received a demerit. Below, you will find detailed information regarding this demerit. 
-                                            To maintain your active membership, please ensure that you are adhering to our regulations. As it stands, this 
-                                            demerit has been recorded as <b style="color: rgb(186, 18, 18);">'.$PointsAdded.' demerit point(s)</b>. Please be aware 
-                                            that accumulating a total of 6 demerit points may result in a 60-day suspension from FBLA events and activities.
-                                        </p>
-                                        <hr><br>
-                                        <table border="1" cellpadding="2" cellspacing="1" style="width: 100%;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <th>Demerit</th>
-                                                    <th>Description</th>
-                                                    <th>Points</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td align="center">'.$ReceivedDate.'</td>
-                                                    <td align="center">'.$demerit.'</td>
-                                                    <td>'.$demeritDescription.'</td>
-                                                    <td align="center">'.$demeritPoints.'</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <br><hr>
-                                        If you identify any errors or have any questions or concerns, please reach out to 
-                                        <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>. For additional inquiries, you may contact 
-                                        <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>. Additionally, you can monitor your membership 
-                                        portal for updates as they arise.
+                    $mailBodyHtml = <<<HTML
+                    <table align="center" border="0" cellpadding="3" cellspacing="1" 
+                        style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p>
+                                        Dear {$FirstName} {$LastName},
                                         <br><br>
-                                        Thanks,<br>
-                                        '. $chapter['ChapterName'] .'
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    ';
+                                        You have recently received a demerit. Below, you will find detailed information regarding this demerit. 
+                                        To maintain your active membership, please ensure that you are adhering to our regulations. As it stands, this 
+                                        demerit has been recorded as <b style="color: rgb(186, 18, 18);">{$PointsAdded} demerit point(s)</b>. Please be aware 
+                                        that accumulating a total of 6 demerit points may result in a 60-day suspension from FBLA events and activities.
+                                    </p>
+                                    <hr><br>
+                                    <table border="1" cellpadding="2" cellspacing="1" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Demerit</th>
+                                                <th>Description</th>
+                                                <th>Points</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td align="center">{$ReceivedDate}</td>
+                                                <td align="center">{$demerit}</td>
+                                                <td>{$demeritDescription}</td>
+                                                <td align="center">{$demeritPoints}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <br><hr>
+                                    If you identify any errors or have any questions or concerns, please reach out to 
+                                    <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>. For additional inquiries, you may contact 
+                                    <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>. Additionally, you can monitor your membership 
+                                    portal for updates as they arise.
+                                    <br><br>
+                                    Thanks,<br>
+                                    {$chapter['ChapterName']}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    HTML;
 
                     $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', getenv('BREVO_API_KEY'));
                     $apiInstance = new TransactionalEmailsApi(new Client(), $config);
@@ -117,7 +124,7 @@
 
                     try {
                         $result = $apiInstance->sendTransacEmail($emailData);
-                        $_SESSION['successMessage'] .= "<div class='message success'>Demerit recorded and email successfully sent!</div>";
+                        $_SESSION['successMessage'] = "<div class='message success'>Demerit recorded and email successfully sent!</div>";
                     } catch (Exception $e) {
                         $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent. Error: ". $e->getMessage() ."</div>";
                     }
