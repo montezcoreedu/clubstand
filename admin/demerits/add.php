@@ -4,27 +4,16 @@
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
+    require_once ("../../vendor/autoload.php");
 
     if (!in_array("Demerits", $userPermissions)) {
         header("Location: ../home/index.php");
         exit();
     }
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-    require '../../PHPMailer/src/Exception.php';
-    require '../../PHPMailer/src/PHPMailer.php';
-    require '../../PHPMailer/src/SMTP.php';
-
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = 'smtp-relay.brevo.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = getenv('BREVO_SMTP_USER');
-    $mail->Password = getenv('BREVO_SMTP_PASSWORD');
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = 587;
-    $mail->setFrom('coresolutionsedu@gmail.com', $chapter['ChapterName'] . ' ByLaw Committee');
+    use SendinBlue\Client\Configuration;
+    use SendinBlue\Client\Api\TransactionalEmailsApi;
+    use GuzzleHttp\Client;
 
     $adminName = $_SESSION['FirstName'] . ' ' . $_SESSION['LastName'];
 
@@ -54,25 +43,20 @@
                 if ($sendEmail) {
                     $ReceivedDate = date('n/j/Y', strtotime($_POST['DemeritDate']));
                     $PointsAdded = $points['CumulativePoints'] + $demeritPoints;
-        
-                    $mail->addAddress($EmailAddress);
-                    $mail->AddCC($PrimaryContactEmail);
-                    $mail->AddCC('smalleys@bcsdschools.net');
-                    $mail->AddCC('lampkinl@bcsdschools.net');
-                    $mail->addReplyTo('smalleys@bcsdschools.net');
-                    $mail->addReplyTo('lampkinl@bcsdschools.net');
-                    $mail->addReplyTo('montezbhsfbla@gmail.com');
-                    $mail->isHTML(true);
-                    $mail->Subject = "$FirstName $LastName - FBLA Demerit Issued";
-                    $mail->Body = '
-                        <table align="center" border="0" cellpadding="3" cellspacing="1" style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
+
+                    $mailBodyHtml = '
+                        <table align="center" border="0" cellpadding="3" cellspacing="1" 
+                            style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
                             <tbody>
                                 <tr>
                                     <td>
                                         <p>
                                             Dear '.$FirstName.' '.$LastName.',
                                             <br><br>
-                                            You have recently received a demerit. Below, you will find detailed information regarding this demerit. To maintain your active membership, please ensure that you are adhering to our regulations. As it stands, this demerit has been recorded as <b style="color: rgb(186, 18, 18);">'.$PointsAdded.' demerit point(s)</b>. Please be aware that accumulating a total of 6 demerit points may result in a 60-day suspension from FBLA events and activities.
+                                            You have recently received a demerit. Below, you will find detailed information regarding this demerit. 
+                                            To maintain your active membership, please ensure that you are adhering to our regulations. As it stands, this 
+                                            demerit has been recorded as <b style="color: rgb(186, 18, 18);">'.$PointsAdded.' demerit point(s)</b>. Please be aware 
+                                            that accumulating a total of 6 demerit points may result in a 60-day suspension from FBLA events and activities.
                                         </p>
                                         <hr><br>
                                         <table border="1" cellpadding="2" cellspacing="1" style="width: 100%;">
@@ -80,7 +64,7 @@
                                                 <tr>
                                                     <th>Date</th>
                                                     <th>Demerit</th>
-                                                    <th align="left">Description</th>
+                                                    <th>Description</th>
                                                     <th>Points</th>
                                                 </tr>
                                             </thead>
@@ -94,20 +78,47 @@
                                             </tbody>
                                         </table>
                                         <br><hr>
-                                        If you identify any errors or have any questions or concerns, please reach out to <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>. For additional inquiries, you may contact <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>. Additionally, you can monitor your membership portal for updates as they arise.
+                                        If you identify any errors or have any questions or concerns, please reach out to 
+                                        <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>. For additional inquiries, you may contact 
+                                        <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>. Additionally, you can monitor your membership 
+                                        portal for updates as they arise.
                                         <br><br>
                                         Thanks,<br>
-                                        ' . $chapter['ChapterName'] . '
+                                        '. $chapter['ChapterName'] .'
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     ';
-        
-                    if ($mail->send()) {
+
+                    $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', getenv('BREVO_API_KEY'));
+                    $apiInstance = new TransactionalEmailsApi(new Client(), $config);
+
+                    $emailData = new \SendinBlue\Client\Model\SendSmtpEmail([
+                        'sender' => [
+                            'email' => 'coresolutionsedu@gmail.com',
+                            'name' => $chapter['ChapterName'] . ' ByLaw Committee'
+                        ],
+                        'to' => [
+                            ['email' => $EmailAddress]
+                        ],
+                        'cc' => [
+                            ['email' => $PrimaryContactEmail],
+                            ['email' => 'smalleys@bcsdschools.net'],
+                            ['email' => 'lampkinl@bcsdschools.net']
+                        ],
+                        'replyTo' => [
+                            'email' => 'montezbhsfbla@gmail.com'
+                        ],
+                        'subject' => "$FirstName $LastName - FBLA Demerit Issued",
+                        'htmlContent' => $mailBodyHtml
+                    ]);
+
+                    try {
+                        $result = $apiInstance->sendTransacEmail($emailData);
                         $_SESSION['successMessage'] .= "<div class='message success'>Demerit recorded and email successfully sent!</div>";
-                    } else {
-                        $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent.</div>";
+                    } catch (Exception $e) {
+                        $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent. Error: ". $e->getMessage() ."</div>";
                     }
                 }
         
