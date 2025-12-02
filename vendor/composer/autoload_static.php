@@ -10,12 +10,17 @@ class ComposerStaticInita58260d20e321240a642d86676150013
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '0754989a10baadda533479884b399278' => __DIR__ . '/..' . '/resend/resend-php/src/Resend.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
             'SendinBlue\\Client\\' => 18,
+        ),
+        'R' => 
+        array (
+            'Resend\\' => 7,
         ),
         'P' => 
         array (
@@ -35,10 +40,14 @@ class ComposerStaticInita58260d20e321240a642d86676150013
         array (
             0 => __DIR__ . '/..' . '/sendinblue/api-v3-sdk/lib',
         ),
+        'Resend\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/resend/resend-php/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (

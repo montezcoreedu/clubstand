@@ -1,5 +1,6 @@
 {
     "require": {
-        "sendinblue/api-v3-sdk": "^8.4"
+        "sendinblue/api-v3-sdk": "^8.4",
+        "resend/resend-php": "^1.1"
     }
 }

@@ -4,25 +4,19 @@
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
-    require_once ("../../vendor/autoload.php");
+    require_once __DIR__ . "/../../vendor/autoload.php";
+
+    use Resend\Resend;
 
     if (!in_array("Demerits", $userPermissions)) {
         header("Location: ../home/index.php");
         exit();
     }
 
-    use SendinBlue\Client\Configuration;
-    use SendinBlue\Client\Api\TransactionalEmailsApi;
-    use GuzzleHttp\Client;
-
     $adminName = $_SESSION['FirstName'] . ' ' . $_SESSION['LastName'];
 
-    if (!isset($_SESSION['successMessage'])) {
-        $_SESSION['successMessage'] = "";
-    }
-    if (!isset($_SESSION['errorMessage'])) {
-        $_SESSION['errorMessage'] = "";
-    }
+    if (!isset($_SESSION['successMessage'])) $_SESSION['successMessage'] = "";
+    if (!isset($_SESSION['errorMessage'])) $_SESSION['errorMessage'] = "";
 
     if (!empty($_GET['id']) && $check_url) {
         include("../common/membercommon.php");
@@ -37,16 +31,15 @@
             $demeritDescription = $_POST['DemeritDescription'];
             $demeritPoints = $_POST['DemeritPoints'];
             $sendEmail = isset($_POST['SendEmail']);
-        
+
             $stmt = $conn->prepare("INSERT INTO demerits (
                 MemberId, IssuedBy, DemeritDate, Demerit, DemeritDescription, DemeritPoints
             ) VALUES (?, ?, ?, ?, ?, ?)");
-            
             $stmt->bind_param("issssi", $getMemberId, $adminName, $demeritDate, $demerit, $demeritDescription, $demeritPoints);
-        
+
             if ($stmt->execute()) {
                 $_SESSION['success'] = "Demerit successfully issued.";
-        
+
                 if ($sendEmail) {
                     $ReceivedDate = date('n/j/Y', strtotime($_POST['DemeritDate']));
                     $PointsAdded = $points['CumulativePoints'] + $demeritPoints;
@@ -58,12 +51,9 @@
                             <tr>
                                 <td>
                                     <p>
-                                        Dear {$FirstName} {$LastName},
-                                        <br><br>
-                                        You have recently received a demerit. Below, you will find detailed information regarding this demerit. 
-                                        To maintain your active membership, please ensure that you are adhering to our regulations. As it stands, this 
-                                        demerit has been recorded as <b style="color: rgb(186, 18, 18);">{$PointsAdded} demerit point(s)</b>. Please be aware 
-                                        that accumulating a total of 6 demerit points may result in a 60-day suspension from FBLA events and activities.
+                                        Dear {$FirstName} {$LastName},<br><br>
+                                        You have recently received a demerit. This demerit has been recorded as 
+                                        <b style="color: rgb(186, 18, 18);">{$PointsAdded} demerit point(s)</b>.
                                     </p>
                                     <hr><br>
                                     <table border="1" cellpadding="2" cellspacing="1" style="width: 100%;">
@@ -85,11 +75,8 @@
                                         </tbody>
                                     </table>
                                     <br><hr>
-                                    If you identify any errors or have any questions or concerns, please reach out to 
-                                    <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>. For additional inquiries, you may contact 
-                                    <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>. Additionally, you can monitor your membership 
-                                    portal for updates as they arise.
-                                    <br><br>
+                                    If you identify any errors or have any questions, please reach out to 
+                                    <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>.<br><br>
                                     Thanks,<br>
                                     {$chapter['ChapterName']}
                                 </td>
@@ -98,42 +85,35 @@
                     </table>
                     HTML;
 
-                    $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', getenv('BREVO_API_KEY'));
-                    $apiInstance = new TransactionalEmailsApi(new Client(), $config);
-
-                    $emailData = new \SendinBlue\Client\Model\SendSmtpEmail([
-                        'sender' => [
-                            'email' => 'coresolutionsedu@gmail.com',
-                            'name' => $chapter['ChapterName'] . ' ByLaw Committee'
-                        ],
-                        'to' => [
-                            ['email' => $EmailAddress]
-                        ],
-                        'cc' => [
-                            ['email' => $PrimaryContactEmail],
-                            ['email' => 'smalleys@bcsdschools.net'],
-                            ['email' => 'lampkinl@bcsdschools.net'],
-                            ['email' => 'montezbhsfbla@gmail.com']
-                        ],
-                        'replyTo' => [
-                            'email' => 'montezbhsfbla@gmail.com'
-                        ],
-                        'subject' => "$FirstName $LastName - FBLA Demerit Issued",
-                        'htmlContent' => $mailBodyHtml
-                    ]);
+                    $resend = new Resend(getenv('RESEND_API_KEY'));
 
                     try {
-                        $result = $apiInstance->sendTransacEmail($emailData);
+                        $resend->emails->send([
+                            'from' => 'no-reply@corecommunication.org',
+                            'to' => $EmailAddress,
+                            'cc' => [
+                                $PrimaryContactEmail,
+                                'smalleys@bcsdschools.net',
+                                'lampkinl@bcsdschools.net',
+                                'montezbhsfbla@gmail.com'
+                            ],
+                            'replyTo' => 'montezbhsfbla@gmail.com',
+                            'subject' => "$FirstName $LastName - FBLA Demerit Issued",
+                            'html' => $mailBodyHtml
+                        ]);
+
                         $_SESSION['successMessage'] = "<div class='message success'>Demerit recorded and email successfully sent!</div>";
-                    } catch (Exception $e) {
+
+                    } catch (\Exception $e) {
                         $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent. Error: ". $e->getMessage() ."</div>";
                     }
                 }
-        
+
                 header("Location: ../members/demerits.php?id=$getMemberId");
                 exit();
+
             } else {
-                $_SESSION['errorMessage'] = "<div class='message error'>Error issuing demerit: " . $stmt->error .'</div>';
+                $_SESSION['errorMessage'] = "<div class='message error'>Error issuing demerit: " . $stmt->error . '</div>';
                 header("Location: ../members/demerits.php?id=$getMemberId");
                 exit();
             }
@@ -194,8 +174,6 @@
                 </li>
             </ul>
             <h2>Add Demerit</h2>
-            <?php
-            var_dump(getenv('BREVO_SMTP_PASSWORD'));?>
             <form method="post">
                 <table class="form-table">
                     <tbody>
