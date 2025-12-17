@@ -6,16 +6,14 @@ use MailerSend\MailerSend;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\Recipient;
 
-// Init MailerSend
 $mailersend = new MailerSend([
     'api_key' => getenv('MAILERSEND_API_KEY'),
 ]);
 
 $toEmail = 'montezbroughton@icloud.com';
 
-// Build email
 $emailParams = (new EmailParams())
-    ->setFrom('test-51ndgwvqv1qlzqx8.mlsender.net') // test domain sender
+    ->setFrom('no-reply@test-51ndgwvqv1qlzqx8.mlsender.net')
     ->setFromName('Core Communication')
     ->setRecipients([
         new Recipient($toEmail, 'Montez')
