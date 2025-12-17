@@ -15,7 +15,7 @@ $toEmail = 'montezbroughton@icloud.com';
 
 // Build email
 $emailParams = (new EmailParams())
-    ->setFrom('no-reply@test-51ndgwvqv1qlzqx8.mlsender.net') // test domain sender
+    ->setFrom('test-51ndgwvqv1qlzqx8.mlsender.net') // test domain sender
     ->setFromName('Core Communication')
     ->setRecipients([
         new Recipient($toEmail, 'Montez')
