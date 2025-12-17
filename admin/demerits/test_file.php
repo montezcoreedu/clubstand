@@ -1,10 +1,11 @@
 <?php
 
-require ("../../vendor/autoload.php");
+require __DIR__ . '/../../vendor/autoload.php';
 
 use MailerSend\MailerSend;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\Recipient;
+use MailerSend\Exceptions\MailerSendException; // import exception
 
 $mailersend = new MailerSend([
     'api_key' => getenv('MAILERSEND_API_KEY'),
@@ -13,7 +14,7 @@ $mailersend = new MailerSend([
 $toEmail = 'montezbroughton@icloud.com';
 
 $emailParams = (new EmailParams())
-    ->setFrom('no-reply@test-51ndgwvqv1qlzqx8.mlsender.net')
+    ->setFrom('no-reply@test-51ndgwvqv1qlzqx8.mlsender.net') // must be full valid email
     ->setFromName('Core Communication')
     ->setRecipients([
         new Recipient($toEmail, 'Montez')
@@ -24,6 +25,6 @@ $emailParams = (new EmailParams())
 try {
     $mailersend->email->send($emailParams);
     echo "✅ Test email sent successfully via API!";
-} catch (Exception $e) {
+} catch (MailerSendException $e) {
     echo "❌ API email failed: " . $e->getMessage();
 }
