@@ -1,41 +1,31 @@
 <?php
-    require("../../vendor/autoload.php");
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
 
-    $host     = getenv('MAILER_HOST');
-    $port     = getenv('MAILER_PORT');
-    $username = getenv('MAILER_USERNAME');
-    $password = getenv('MAILER_PASSWORD');
-    $from     = getenv('MAILER_FROM_ADDRESS');
-    $fromName = getenv('MAILER_FROM_NAME');
+require __DIR__ . '/../../vendor/autoload.php';
 
-    $to = 'montezbroughton@icloud.com';
+use MailerSend\MailerSend;
+use MailerSend\Helpers\Builder\EmailParams;
+use MailerSend\Helpers\Builder\Recipient;
 
-    $mail = new PHPMailer(true);
+// Init MailerSend
+$mailersend = new MailerSend([
+    'api_key' => getenv('MAILERSEND_API_KEY'),
+]);
 
-    try {
-        $mail->isSMTP();
-        $mail->Host       = $host;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $username;
-        $mail->Password   = $password;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = $port;
-        $mail->CharSet    = 'UTF-8';
+$toEmail = 'montezbroughton@icloud.com';
 
-        $mail->SMTPDebug  = 2;
-        $mail->Debugoutput = 'html';
+// Build email
+$emailParams = (new EmailParams())
+    ->setFrom('no-reply@test-51ndgwvqv1qlzqx8.mlsender.net') // test domain sender
+    ->setFromName('Core Communication')
+    ->setRecipients([
+        new Recipient($toEmail, 'Montez')
+    ])
+    ->setSubject('MailerSend API Test ✅')
+    ->setHtml('<p>If you see this email, the MailerSend API is working! 🚀</p>');
 
-        $mail->setFrom($from, $fromName);
-        $mail->addAddress($to);
-
-        $mail->isHTML(true);
-        $mail->Subject = 'MailerSend SMTP Test';
-        $mail->Body    = '<p>If you see this email, SMTP is working! ✅</p>';
-
-        $mail->send();
-        echo "Test email sent successfully!";
-    } catch (Exception $e) {
-        echo "Test email failed: " . $mail->ErrorInfo;
-    }
+try {
+    $mailersend->email->send($emailParams);
+    echo "✅ Test email sent successfully via API!";
+} catch (Exception $e) {
+    echo "❌ API email failed: " . $e->getMessage();
+}
