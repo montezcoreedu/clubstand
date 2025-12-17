@@ -1,12 +1,12 @@
 <?php
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
-    require_once __DIR__ . "/../../vendor/autoload.php";
-
-    use Resend\Resend;
 
     if (!in_array("Demerits", $userPermissions)) {
         header("Location: ../home/index.php");
@@ -85,27 +85,34 @@
                     </table>
                     HTML;
 
-                    $resend = new Resend(getenv('RESEND_API_KEY'));
+                    $mail = new PHPMailer(true);
 
                     try {
-                        $resend->emails->send([
-                            'from' => 'no-reply@corecommunication.org',
-                            'to' => $EmailAddress,
-                            'cc' => [
-                                $PrimaryContactEmail,
-                                'smalleys@bcsdschools.net',
-                                'lampkinl@bcsdschools.net',
-                                'montezbhsfbla@gmail.com'
-                            ],
-                            'replyTo' => 'montezbhsfbla@gmail.com',
-                            'subject' => "$FirstName $LastName - FBLA Demerit Issued",
-                            'html' => $mailBodyHtml
-                        ]);
+                        $mail->isSMTP();
+                        $mail->Host       = getenv('MAILER_HOST');
+                        $mail->SMTPAuth   = true;
+                        $mail->Username   = getenv('MAILER_USERNAME');
+                        $mail->Password   = getenv('MAILER_PASSWORD');
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port       = getenv('MAILER_PORT');
 
+                        $mail->setFrom(getenv('MAILER_FROM_ADDRESS'), getenv('MAILER_FROM_NAME'));
+                        $mail->addAddress($EmailAddress);
+                        $mail->addCC($PrimaryContactEmail);
+                        $mail->addCC('smalleys@bcsdschools.net');
+                        $mail->addCC('lampkinl@bcsdschools.net');
+                        $mail->addCC('montezbhsfbla@gmail.com');
+                        $mail->addReplyTo('montezbhsfbla@gmail.com');
+
+                        $mail->isHTML(true);
+                        $mail->Subject = "$FirstName $LastName - FBLA Demerit Issued";
+                        $mail->Body    = $mailBodyHtml;
+
+                        $mail->send();
                         $_SESSION['successMessage'] = "<div class='message success'>Demerit recorded and email successfully sent!</div>";
 
-                    } catch (\Exception $e) {
-                        $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent. Error: ". $e->getMessage() ."</div>";
+                    } catch (Exception $e) {
+                        $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent. Error: ". $mail->ErrorInfo ."</div>";
                     }
                 }
 

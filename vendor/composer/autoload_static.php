@@ -4,66 +4,19 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita58260d20e321240a642d86676150013
+class ComposerStaticInite8315bae2e130c5943e1ce4da70b4c9b
 {
-    public static $files = array (
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        '0754989a10baadda533479884b399278' => __DIR__ . '/..' . '/resend/resend-php/src/Resend.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
-        'S' => 
-        array (
-            'SendinBlue\\Client\\' => 18,
-        ),
-        'R' => 
-        array (
-            'Resend\\' => 7,
-        ),
         'P' => 
         array (
-            'Psr\\Http\\Message\\' => 17,
-            'Psr\\Http\\Client\\' => 16,
-        ),
-        'G' => 
-        array (
-            'GuzzleHttp\\Psr7\\' => 16,
-            'GuzzleHttp\\Promise\\' => 19,
-            'GuzzleHttp\\' => 11,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'SendinBlue\\Client\\' => 
+        'PHPMailer\\PHPMailer\\' => 
         array (
-            0 => __DIR__ . '/..' . '/sendinblue/api-v3-sdk/lib',
-        ),
-        'Resend\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/resend/resend-php/src',
-        ),
-        'Psr\\Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'Psr\\Http\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-client/src',
-        ),
-        'GuzzleHttp\\Psr7\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
-        ),
-        'GuzzleHttp\\Promise\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
-        ),
-        'GuzzleHttp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
     );
 
@@ -74,9 +27,9 @@ class ComposerStaticInita58260d20e321240a642d86676150013
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita58260d20e321240a642d86676150013::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita58260d20e321240a642d86676150013::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita58260d20e321240a642d86676150013::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite8315bae2e130c5943e1ce4da70b4c9b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite8315bae2e130c5943e1ce4da70b4c9b::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInite8315bae2e130c5943e1ce4da70b4c9b::$classMap;
 
         }, null, ClassLoader::class);
     }
