@@ -1,4 +1,6 @@
 <?php
+    require __DIR__ . '/../../vendor/autoload.php';
+    
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
