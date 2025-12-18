@@ -1,36 +1,18 @@
 <?php
+require '../../vendor/autoload.php';
 
-require __DIR__ . '/../../vendor/autoload.php';
+use Mailgun\Mailgun;
 
-use MailerSend\MailerSend;
-use MailerSend\Helpers\Builder\Recipient;
-use MailerSend\Helpers\Builder\EmailParams;
-use MailerSend\Exceptions\MailerSendException;
+$mg = Mailgun::create(getenv('MAILGUN_API_KEY') ?: 'MAILGUN_API_KEY');
 
-// Init MailerSend with your API key
-$mailersend = new MailerSend([
-    'api_key' => getenv('MAILERSEND_API_KEY'),
-]);
+$result = $mg->messages()->send(
+	'sandbox1d1cddcc20394d58bc11904f63a47040.mailgun.org',
+	[
+		'from' => 'Mailgun Sandbox <postmaster@sandbox1d1cddcc20394d58bc11904f63a47040.mailgun.org>',
+		'to' => 'Core Education <coresolutionsedu@gmail.com>',
+		'subject' => 'Hello Core Education',
+		'text' => 'Congratulations Core Education, you just sent an email with Mailgun! You are truly awesome!'
+	]
+);
 
-$toEmail = 'montezbroughton@icloud.com';
-
-// Build recipient list
-$recipients = [
-    new Recipient($toEmail, 'Montez'),
-];
-
-// Build email parameters
-$emailParams = (new EmailParams())
-    ->setFrom('no-reply@corecommunication.org') // must be exact test domain email
-    ->setFromName('Core Communication')
-    ->setRecipients($recipients)
-    ->setSubject('MailerSend API Test ✅')
-    ->setHtml('<p>If you see this email, the MailerSend API is working! 🚀</p>')
-    ->setText('If you see this email, the MailerSend API is working! 🚀');
-
-try {
-    $mailersend->email->send($emailParams);
-    echo "✅ Test email sent successfully via API!";
-} catch (MailerSendException $e) {
-    echo "❌ API email failed: " . $e->getMessage();
-}
+print_r($result->getMessage());

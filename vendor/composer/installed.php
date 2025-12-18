@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7d1e715674c13005d44fc781dfd041fad37c0327',
+        'reference' => '07443c15ad521d3df87b372f60bcd75cdfb014ca',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,18 +13,9 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7d1e715674c13005d44fc781dfd041fad37c0327',
+            'reference' => '07443c15ad521d3df87b372f60bcd75cdfb014ca',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'beberlei/assert' => array(
-            'pretty_version' => 'v3.3.3',
-            'version' => '3.3.3.0',
-            'reference' => 'b5fd8eacd8915a1b627b8bfc027803f1939734dd',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../beberlei/assert',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -37,12 +28,21 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'mailersend/mailersend' => array(
-            'pretty_version' => 'v0.35.0',
-            'version' => '0.35.0.0',
-            'reference' => 'f1696cf9e727e9503fbc5882d2a111bd966ad276',
+        'kriswallsmith/buzz' => array(
+            'pretty_version' => '1.3.0',
+            'version' => '1.3.0.0',
+            'reference' => '94c65f64b24d90ab9ca2ca82f40368fa0a1d61dd',
             'type' => 'library',
-            'install_path' => __DIR__ . '/../mailersend/mailersend',
+            'install_path' => __DIR__ . '/../kriswallsmith/buzz',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'mailgun/mailgun-php' => array(
+            'pretty_version' => 'v4.3.5',
+            'version' => '4.3.5.0',
+            'reference' => '3b1e971a572e55efa3d97b6a3f48c9e3683dcae6',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../mailgun/mailgun-php',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -74,6 +74,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -109,6 +110,15 @@
                 0 => '1.0',
             ),
         ),
+        'php-http/multipart-stream-builder' => array(
+            'pretty_version' => '1.4.2',
+            'version' => '1.4.2.0',
+            'reference' => '10086e6de6f53489cca5ecc45b6f468604d3460e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/multipart-stream-builder',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'php-http/promise' => array(
             'pretty_version' => '1.3.1',
             'version' => '1.3.1.0',
@@ -139,8 +149,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(
@@ -155,8 +165,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -171,8 +181,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/log' => array(
@@ -250,6 +260,15 @@
             'reference' => '45112560a3ba2d715666a509a0bc9521d10b6c43',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/service-contracts',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'webmozart/assert' => array(
+            'pretty_version' => '1.12.1',
+            'version' => '1.12.1.0',
+            'reference' => '9be6926d8b485f55b9229203f962b51ed377ba68',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../webmozart/assert',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
