@@ -21,7 +21,7 @@ $recipients = [
 
 // Build email parameters
 $emailParams = (new EmailParams())
-    ->setFrom('corecommunication.org') // must be exact test domain email
+    ->setFrom('no-reply@corecommunication.org') // must be exact test domain email
     ->setFromName('Core Communication')
     ->setRecipients($recipients)
     ->setSubject('MailerSend API Test ✅')
