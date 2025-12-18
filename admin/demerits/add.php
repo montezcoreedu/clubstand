@@ -1,17 +1,18 @@
 <?php
-    // use PHPMailer\PHPMailer\PHPMailer;
-    // use PHPMailer\PHPMailer\Exception;
-
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
 
+    use Mailgun\Mailgun;
+
     if (!in_array("Demerits", $userPermissions)) {
         header("Location: ../home/index.php");
         exit();
     }
+
+    $mg = Mailgun::create(getenv('MAILGUN_API_KEY'));
 
     $adminName = $_SESSION['FirstName'] . ' ' . $_SESSION['LastName'];
 
@@ -20,21 +21,22 @@
 
     if (!empty($_GET['id']) && $check_url) {
         include("../common/membercommon.php");
-        
-        $points_sql = "SELECT SUM(DemeritPoints) AS CumulativePoints FROM demerits WHERE MemberId = $getMemberId";
+
+        $points_sql = "SELECT SUM(DemeritPoints) AS CumulativePoints 
+                    FROM demerits 
+                    WHERE MemberId = $getMemberId";
         $points_query = $conn->query($points_sql);
         $points = mysqli_fetch_assoc($points_query);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
             $demeritDate = date('Y-m-d', strtotime($_POST['DemeritDate']));
             $demerit = $_POST['Demerit'];
             $demeritDescription = $_POST['DemeritDescription'];
-            $demeritPoints = $_POST['DemeritPoints'];
+            $demeritPoints = (int)$_POST['DemeritPoints'];
             $sendEmail = isset($_POST['SendEmail']);
 
-            $stmt = $conn->prepare("INSERT INTO demerits (
-                MemberId, IssuedBy, DemeritDate, Demerit, DemeritDescription, DemeritPoints
-            ) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO demerits (MemberId, IssuedBy, DemeritDate, Demerit, DemeritDescription, DemeritPoints) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("issssi", $getMemberId, $adminName, $demeritDate, $demerit, $demeritDescription, $demeritPoints);
 
             if ($stmt->execute()) {
@@ -42,77 +44,81 @@
 
                 if ($sendEmail) {
                     $ReceivedDate = date('n/j/Y', strtotime($_POST['DemeritDate']));
-                    $PointsAdded = $points['CumulativePoints'] + $demeritPoints;
+                    $PointsAdded = (int)$points['CumulativePoints'] + $demeritPoints;
 
                     $mailBodyHtml = <<<HTML
-                    <table align="center" border="0" cellpadding="3" cellspacing="1" 
-                        style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p>
-                                        Dear {$FirstName} {$LastName},<br><br>
-                                        You have recently received a demerit. This demerit has been recorded as 
-                                        <b style="color: rgb(186, 18, 18);">{$PointsAdded} demerit point(s)</b>.
-                                    </p>
-                                    <hr><br>
-                                    <table border="1" cellpadding="2" cellspacing="1" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Demerit</th>
-                                                <th>Description</th>
-                                                <th>Points</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td align="center">{$ReceivedDate}</td>
-                                                <td align="center">{$demerit}</td>
-                                                <td>{$demeritDescription}</td>
-                                                <td align="center">{$demeritPoints}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <br><hr>
-                                    If you identify any errors or have any questions, please reach out to 
-                                    <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>.<br><br>
-                                    Thanks,<br>
-                                    {$chapter['ChapterName']}
-                                </td>
-                            </tr>
-                        </tbody>
+                    <table align="center" cellpadding="3" cellspacing="1"
+                        style="font-family: Times New Roman, Times, serif; font-size:16px; width:100%; max-width:720px;">
+                    <tbody>
+                    <tr>
+                    <td>
+                    <p>
+                    Dear {$FirstName} {$LastName},<br><br>
+                    You have recently received a demerit. This demerit has been recorded as
+                    <b style="color:#ba1212;">{$PointsAdded} demerit point(s)</b>.
+                    </p>
+
+                    <hr><br>
+
+                    <table border="1" cellpadding="4" cellspacing="0" style="width:100%;">
+                    <thead>
+                    <tr>
+                    <th>Date</th>
+                    <th>Demerit</th>
+                    <th>Description</th>
+                    <th>Points</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <td align="center">{$ReceivedDate}</td>
+                    <td align="center">{$demerit}</td>
+                    <td>{$demeritDescription}</td>
+                    <td align="center">{$demeritPoints}</td>
+                    </tr>
+                    </tbody>
+                    </table>
+
+                    <br><hr>
+
+                    If you identify any errors or have questions, please contact
+                    <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>.<br><br>
+
+                    Thanks,<br>
+                    {$chapter['ChapterName']}
+                    </td>
+                    </tr>
+                    </tbody>
                     </table>
                     HTML;
 
-                    $mail = new PHPMailer(true);
-
                     try {
-                        $mail->isSMTP();
-                        $mail->Host       = getenv('MAILER_HOST');
-                        $mail->SMTPAuth   = true;
-                        $mail->Username   = getenv('MAILER_USERNAME');
-                        $mail->Password   = getenv('MAILER_PASSWORD');
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                        $mail->Port       = getenv('MAILER_PORT');
+                        $mg->messages()->send(
+                            'corecommunication.org',
+                            [
+                                'from' => $chapter['ChapterName'] . ' <no-reply@corecommunication.org>',
+                                'to' => $EmailAddress,
+                                'cc' => [
+                                    $PrimaryContactEmail,
+                                    'smalleys@bcsdschools.net',
+                                    'lampkinl@bcsdschools.net',
+                                    'montezbhsfbla@gmail.com'
+                                ],
+                                'h:Reply-To' => 'montezbhsfbla@gmail.com',
+                                'subject' => "$FirstName $LastName - FBLA Demerit Issued",
+                                'html' => $mailBodyHtml
+                            ]
+                        );
 
-                        $mail->setFrom(getenv('MAILER_FROM_ADDRESS'), getenv('MAILER_FROM_NAME'));
-                        $mail->addAddress($EmailAddress);
-                        $mail->addCC($PrimaryContactEmail);
-                        $mail->addCC('smalleys@bcsdschools.net');
-                        $mail->addCC('lampkinl@bcsdschools.net');
-                        $mail->addCC('montezbhsfbla@gmail.com');
-                        $mail->addReplyTo('montezbhsfbla@gmail.com');
-
-                        $mail->isHTML(true);
-                        $mail->Subject = "$FirstName $LastName - FBLA Demerit Issued";
-                        $mail->Body    = $mailBodyHtml;
-
-                        $mail->send();
-                        $_SESSION['successMessage'] = "<div class='message success'>Demerit recorded and email successfully sent!</div>";
+                        $_SESSION['successMessage'] =
+                            "<div class='message success'>Demerit recorded and email successfully sent!</div>";
 
                     } catch (Exception $e) {
-                        $_SESSION['errorMessage'] = "<div class='message error'>Demerit saved, but email could not be sent. Error: ". $mail->ErrorInfo ."</div>";
+                        $_SESSION['errorMessage'] =
+                            "<div class='message error'>
+                                Demerit saved, but email could not be sent.
+                                Error: " . htmlspecialchars($e->getMessage()) . "
+                            </div>";
                     }
                 }
 
@@ -120,7 +126,8 @@
                 exit();
 
             } else {
-                $_SESSION['errorMessage'] = "<div class='message error'>Error issuing demerit: " . $stmt->error . '</div>';
+                $_SESSION['errorMessage'] =
+                    "<div class='message error'>Error issuing demerit: {$stmt->error}</div>";
                 header("Location: ../members/demerits.php?id=$getMemberId");
                 exit();
             }
