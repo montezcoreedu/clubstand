@@ -558,7 +558,7 @@
 
             // Thanks Message
             $html = '
-                <p style="font-size: 11px; line-height: 20px;">If you have any questions before or during this process, please reach out to your membership coordinator at montezbhsfbla@gmail.com for help.</p>';
+                <p style="font-size: 11px; line-height: 20px;">If you have any questions before or during this process, please reach out to your membership coordinator at anastasiabhsfbla@gmail.com for help.</p>';
             $pdf->writeHTML($html, true, false, false, false, '');
             $pdf->Ln(5);
 

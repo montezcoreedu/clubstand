@@ -1,30 +1,21 @@
 <?php
+    require __DIR__ . '/../../vendor/autoload.php';
+
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
 
+    use Mailgun\Mailgun;
+
     if (!in_array("Demerits", $userPermissions)) {
         header("Location: ../home/index.php");
         exit();
     }
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-    require '../../PHPMailer/src/Exception.php';
-    require '../../PHPMailer/src/PHPMailer.php';
-    require '../../PHPMailer/src/SMTP.php';
-
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'montezbhsfbla@gmail.com';
-    $mail->Password = 'xswpfxfdlndcloje';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
-    $mail->setFrom('montezbhsfbla@gmail.com', '' . $chapter['ChapterName'] . ' ByLaw Committee');
+    $mg = Mailgun::create(getenv('MAILGUN_API_KEY'));
+    $mailgunDomain = 'corecommunication.org';
 
     if (!empty($_GET['id']) && $check_url) {
         include("../common/membercommon.php");
@@ -35,32 +26,46 @@
             $startDate = date('Y-m-d', strtotime($_POST['StartDate']));
             $endDate = date('Y-m-d', strtotime($_POST['EndDate']));
             $probationReason = $_POST['ProbationReason'];
-            $conditionsForRemoval = isset($_POST['ProbationCondition']) ? json_encode($_POST['ProbationCondition']) : "[]";
-        
-            $sql = "INSERT INTO probation (
-                        MemberId, IssuedBy, ProbationLevel, StartDate, EndDate, 
-                        ProbationReason, ConditionsForRemoval, ConditionsMet
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, '')";
-        
+            $conditionsForRemoval = isset($_POST['ProbationCondition'])
+                ? json_encode($_POST['ProbationCondition'])
+                : "[]";
+
+            $sql = "
+                INSERT INTO probation (
+                    MemberId, IssuedBy, ProbationLevel, StartDate, EndDate,
+                    ProbationReason, ConditionsForRemoval, ConditionsMet
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, '')
+            ";
+
             if ($stmt = $conn->prepare($sql)) {
-                $stmt->bind_param("issssss", $getMemberId, $issuedBy, $probationLevel, $startDate, $endDate, $probationReason, $conditionsForRemoval);
-        
+                $stmt->bind_param(
+                    "issssss",
+                    $getMemberId,
+                    $issuedBy,
+                    $probationLevel,
+                    $startDate,
+                    $endDate,
+                    $probationReason,
+                    $conditionsForRemoval
+                );
+
                 if ($stmt->execute()) {
-                    $updateStatusSql = "UPDATE members SET MemberStatus = 2 WHERE MemberId = ?";
-                    if ($updateStmt = $conn->prepare($updateStatusSql)) {
-                        $updateStmt->bind_param("i", $getMemberId);
-                        $updateStmt->execute();
-                        $updateStmt->close();
-                    }
-        
-                    $_SESSION['successMessage'] = "<div class='message success'>Probation successfully recorded!</div>";
-        
-                    $sendEmail = isset($_POST['SendEmail']) ? true : false;
-                    if ($sendEmail) {
+                    $updateStmt = $conn->prepare("
+                        UPDATE members 
+                        SET MemberStatus = 2 
+                        WHERE MemberId = ?
+                    ");
+                    $updateStmt->bind_param("i", $getMemberId);
+                    $updateStmt->execute();
+                    $updateStmt->close();
+
+                    $_SESSION['successMessage'] =
+                        "<div class='message success'>Probation successfully recorded!</div>";
+
+                    if (isset($_POST['SendEmail'])) {
                         $ProbationStart = date('n/j/Y', strtotime($_POST['StartDate']));
                         $ProbationEnd = date('n/j/Y', strtotime($_POST['EndDate']));
-        
-                        $conditionsList = "";
+
                         $conditionsArray = $_POST['ProbationCondition'] ?? [];
                         if (is_array($conditionsArray) && count(array_filter($conditionsArray))) {
                             $conditionsList = "<ul>";
@@ -71,58 +76,81 @@
                         } else {
                             $conditionsList = "<p>No conditions set for removal.</p>";
                         }
-        
-                        $mail->addAddress($EmailAddress);
-                        $mail->AddCC($PrimaryContactEmail);
-                        $mail->AddCC('smalleys@bcsdschools.net');
-                        $mail->AddCC('lampkinl@bcsdschools.net');
-                        $mail->addReplyTo('smalleys@bcsdschools.net');
-                        $mail->addReplyTo('lampkinl@bcsdschools.net');
-                        $mail->addReplyTo('montezbhsfbla@gmail.com');
-                        $mail->isHTML(true);
-                        $mail->Subject = $FirstName . ' ' . $LastName . ' - FBLA Probation Report';
-                        $mail->Body = '
-                            <table align="center" border="0" cellpadding="3" cellspacing="1" style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <p>
-                                                Dear ' . $FirstName . ' ' . $LastName . ',
-                                                <br><br>
-                                                You have been placed on a 60-day probationary period due to the accumulation of six demerits. 
-                                                This probation period will commence on ' . $ProbationStart . ' and conclude on ' . $ProbationEnd . '. 
-                                                As a member, you are still required to attend chapter meetings and engage in community service and fundraising activities; 
-                                                however, please be advised that you will not be permitted to participate in any activities or celebrations during this time. 
-                                                The probation reason and conditions for removal are as follows:
-                                            </p>
-                                            <b>Probation reason:</b> ' . $probationReason . '
-                                            <br>
-                                            ' . $conditionsList . '
-                                            <hr>
-                                            For additional inquiries, you may contact <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>. Additionally, you can monitor your membership portal for updates as they arise.
-                                            <br>
-                                            <br>
-                                            Thanks,
-                                            <br>
-                                            ' . $chapter['ChapterName'] . '
-                                        </td>
-                                    </tr>
-                                </tbody>
+
+                        $emailHtml = "
+                            <table align='center' style='font-family: Times New Roman; font-size: 16px; max-width: 720px;'>
+                                <tr>
+                                    <td style='padding:20px;'>
+                                        <p>
+                                            Dear {$FirstName} {$LastName},<br><br>
+                                            You have been placed on a <b>60-day probationary period</b>
+                                            due to the accumulation of six demerits.
+                                            This probation period will begin on
+                                            <b>{$ProbationStart}</b> and conclude on
+                                            <b>{$ProbationEnd}</b>.
+                                        </p>
+
+                                        <p>
+                                            During this time, you are still required to attend meetings
+                                            and participate in service and fundraising activities.
+                                            However, you may not participate in chapter activities or celebrations.
+                                        </p>
+
+                                        <p><b>Probation reason:</b> {$probationReason}</p>
+
+                                        {$conditionsList}
+
+                                        <hr>
+
+                                        <p>
+                                            For questions, contact
+                                            <a href='mailto:SmalleyS@bcsdschools.net'>
+                                                SmalleyS@bcsdschools.net
+                                            </a>.
+                                            You may also monitor your membership portal for updates.
+                                        </p>
+
+                                        <p>
+                                            Thanks,<br>
+                                            {$chapter['ChapterName']}
+                                        </p>
+                                    </td>
+                                </tr>
                             </table>
-                        ';
-                        $mail->send();
+                        ";
+
+                        $mg->messages()->send($mailgunDomain, [
+                            'from' => "{$chapter['ChapterName']} ByLaw Committee <no-reply@corecommunication.org>",
+                            'to' => $EmailAddress,
+                            'cc' => [
+                                $PrimaryContactEmail,
+                                'smalleys@bcsdschools.net',
+                                'lampkinl@bcsdschools.net'
+                            ],
+                            'reply-to' => [
+                                'smalleys@bcsdschools.net',
+                                'lampkinl@bcsdschools.net',
+                                'anastasiabhsfbla@gmail.com'
+                            ],
+                            'subject' => "{$FirstName} {$LastName} - FBLA Probation Report",
+                            'html' => $emailHtml
+                        ]);
                     }
+
                 } else {
-                    $_SESSION['errorMessage'] = "<div class='message error'>Something went wrong. Please try again.</div>";
+                    $_SESSION['errorMessage'] =
+                        "<div class='message error'>Something went wrong. Please try again.</div>";
                 }
+
                 $stmt->close();
             } else {
-                $_SESSION['errorMessage'] = "<div class='message error'>Something went wrong. Please try again.</div>";
+                $_SESSION['errorMessage'] =
+                    "<div class='message error'>Something went wrong. Please try again.</div>";
             }
-        
+
             header("Location: ../members/demerits.php?id=$getMemberId");
             exit();
-        }        
+        }
 ?>
 <!DOCTYPE html>
 <html lang="en">

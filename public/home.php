@@ -265,7 +265,7 @@
         <div class="column_box_light_gray">
             <h2>Have questions or need help?</h2>
             <h3>Connect with your membership coordinator by sending an email to</h3>
-            <a href="mailto:montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</a>
+            <a href="mailto:anastasiabhsfbla@gmail.com">anastasiabhsfbla@gmail.com</a>
         </div>
     </div>
     <footer>

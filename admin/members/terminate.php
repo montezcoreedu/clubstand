@@ -1,30 +1,21 @@
 <?php
+    require __DIR__ . '/../../vendor/autoload.php';
+
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
 
+    use Mailgun\Mailgun;
+
     if (!in_array("Member Membership", $userPermissions)) {
         header("Location: ../home/index.php");
         exit();
     }
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-    require '../../PHPMailer/src/Exception.php';
-    require '../../PHPMailer/src/PHPMailer.php';
-    require '../../PHPMailer/src/SMTP.php';
-
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'montezbhsfbla@gmail.com';
-    $mail->Password = 'xswpfxfdlndcloje';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
-    $mail->setFrom('montezbhsfbla@gmail.com', '' . $chapter['ChapterName'] . ' ByLaw Committee');
+    $mg = Mailgun::create(getenv('MAILGUN_API_KEY'));
+    $mailgunDomain = 'corecommunication.org';
 
     if (!empty($_GET['id']) && $check_url) {
         include("../common/membercommon.php");
@@ -35,24 +26,19 @@
             $terminationDate = date('Y-m-d', strtotime($_POST['TerminationDate']));
             $terminationReason = mysqli_real_escape_string($conn, $_POST['TerminationReason']);
             $sendEmail = isset($_POST['SendEmail']);
-        
+
             $sql = "INSERT INTO termination (MemberId, IssuedBy, TerminationDate, TerminationReason)
                     VALUES ('$getMemberId', '$adminName', '$terminationDate', '$terminationReason')";
-        
+
             if (mysqli_query($conn, $sql)) {
                 $updateStatus = "UPDATE members SET MemberStatus = 3 WHERE MemberId = '$getMemberId'";
                 if (mysqli_query($conn, $updateStatus)) {
-        
+
                     if ($sendEmail) {
                         $RecordedDate = date('n/j/Y', strtotime($_POST['TerminationDate']));
-        
-                        $mail->addAddress($EmailAddress);
-                        $mail->addReplyTo('smalleys@bcsdschools.net');
-                        $mail->addReplyTo('lampkinl@bcsdschools.net');
-                        $mail->addReplyTo('montezbhsfbla@gmail.com');
-                        $mail->isHTML(true);
-                        $mail->Subject = "$FirstName $LastName - FBLA Termination";
-                        $mail->Body = '
+
+                        $subject = "$FirstName $LastName - FBLA Termination";
+                        $body = '
                             <table align="center" border="0" cellpadding="3" cellspacing="1" style="font-family: Times New Roman, Times, serif; font-size: 16px; width: 100%; max-width: 720px;">
                                 <tbody>
                                     <tr>
@@ -63,7 +49,7 @@
                                                 Your membership in the ' . $chapter['ChapterName'] . ' chapter has been officially terminated as of '.$RecordedDate.'. As a result, you are no longer a member of our chapter. Below, you will find the reasons for your termination, and you will receive an official letter outlining this decision in paper view. Should you have any further questions or concerns, please do not hesitate to contact <a href="mailto:SmalleyS@bcsdschools.net">SmalleyS@bcsdschools.net</a>.
                                             </p>
                                             <br>
-                                            <b>Termination reason: '.$terminationReason.'></b>
+                                            <b>Termination reason: '.$terminationReason.'</b>
                                             <br>
                                             Thanks,
                                             <br>
@@ -73,19 +59,33 @@
                                 </tbody>
                             </table>
                         ';
-                        $mail->send();
+
+                        try {
+                            $mg->messages()->send($mailgunDomain, [
+                                'from'    => $chapter['ChapterName'].' ByLaw Committee <no-reply@corecommunication.org>',
+                                'to'      => $EmailAddress,
+                                'cc'      => [$PrimaryContactEmail, 'smalleys@bcsdschools.net', 'lampkinl@bcsdschools.net',
+                                'anastasiabhsfbla@gmail.com'],
+                                'subject' => $subject,
+                                'html'    => $body,
+                            ]);
+                        } catch (\Exception $e) {
+                            $_SESSION['errorMessage'] = "<div class='message error'>Termination recorded, but email failed to send. Error: ".$e->getMessage()."</div>";
+                            header("Location: ../members/membership.php?id=$getMemberId");
+                            exit();
+                        }
                     }
-        
+
                     $_SESSION['successMessage'] = "<div class='message success'>Termination successfully recorded and member status updated.</div>";
                     header("Location: ../members/membership.php?id=$getMemberId");
                     exit();
-        
+
                 } else {
                     $_SESSION['errorMessage'] = "<div class='message error'>Termination recorded, but failed to update member status.</div>";
                     header("Location: ../members/membership.php?id=$getMemberId");
                     exit();
                 }
-        
+
             } else {
                 $_SESSION['errorMessage'] = "<div class='message error'>Failed to record termination. Please try again.</div>";
                 header("Location: ../members/membership.php?id=$getMemberId");

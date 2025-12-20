@@ -1,66 +1,77 @@
 <?php
+    require __DIR__ . '/../../vendor/autoload.php';
+
     include("../../dbconnection.php");
     include("../common/session.php");
     include("../common/chapter_settings.php");
     include("../common/checkmemberurl.php");
     include("../common/permissions.php");
 
+    use Mailgun\Mailgun;
+
     if (!in_array("Member Communication", $userPermissions)) {
         header("Location: ../home/index.php");
         exit();
     }
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-    require '../../PHPMailer/src/Exception.php';
-    require '../../PHPMailer/src/PHPMailer.php';
-    require '../../PHPMailer/src/SMTP.php';
-
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'montezbhsfbla@gmail.com';
-    $mail->Password = 'xswpfxfdlndcloje';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
-    $mail->setFrom('montezbhsfbla@gmail.com', '' . $chapter['ChapterName'] . ' Communications');
+    $mg = Mailgun::create(getenv('MAILGUN_API_KEY'));
+    $mailgunDomain = 'corecommunication.org';
 
     if (!empty($_GET['id']) && $check_url) {
         include("../common/membercommon.php");
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $emails = $_POST['Emails'];
-            $emailsCC = isset($_POST['EmailsCC']) ? $_POST['EmailsCC'] : [];
-            $subject = mysqli_real_escape_string($conn, $_POST['Subject']);
-            $message = $_POST['Message'];
-        
-            try {
-                foreach ($emails as $email) {
-                    $mail->addAddress($email);
-                }
-                foreach ($emailsCC as $emailCC) {
-                    $mail->addCC($emailCC);
-                }
-        
-                $mail->addReplyTo('smalleys@bcsdschools.net');
-                $mail->addReplyTo('lampkinl@bcsdschools.net');
-                $mail->addReplyTo('montezbhsfbla@gmail.com');
-        
-                $mail->isHTML(true);
-                $mail->Subject = $subject;
-                $mail->Body = $message;
-        
-                if ($mail->send()) {
-                    $_SESSION['successMessage'] = "<div class='message success'>Message sent successfully!</div>";
-                } else {
-                    $_SESSION['errorMessage'] = "<div class='message error'>Message could not be sent. Error: {$mail->ErrorInfo}</div>";
-                    var_dump($mail->ErrorInfo);
-                }
-            } catch (Exception $e) {
-                $_SESSION['errorMessage'] = "<div class='message error'>Message could not be sent. Mailer Error: {$mail->ErrorInfo}</div>";
-                var_dump($e->getMessage());
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $emails   = $_POST['Emails'] ?? [];
+            $emailsCC = $_POST['EmailsCC'] ?? [];
+            $subject  = trim($_POST['Subject']);
+            $message  = $_POST['Message'];
+
+            if (empty($emails)) {
+                $_SESSION['errorMessage'] =
+                    "<div class='message error'>No recipients selected.</div>";
+                header("Location: index.php?id=$getMemberId");
+                exit();
             }
+
+            try {
+                $mg->messages()->send($mailgunDomain, [
+                    'from' =>
+                        "{$chapter['ChapterName']} Communications <no-reply@corecommunication.org>",
+                    'to' => $emails,
+                    'cc' => $emailsCC,
+                    'reply-to' => [
+                        'smalleys@bcsdschools.net',
+                        'lampkinl@bcsdschools.net',
+                        'anastasiabhsfbla@gmail.com'
+                    ],
+                    'subject' => $subject,
+                    'html' => "
+                        <table align='center'
+                            style='font-family: Times New Roman; font-size: 16px; max-width: 720px;'>
+                            <tr>
+                                <td style='padding:20px;'>
+                                    {$message}
+                                    <hr>
+                                    <p>
+                                        Thanks,<br>
+                                        {$chapter['ChapterName']}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    "
+                ]);
+
+                $_SESSION['successMessage'] =
+                    "<div class='message success'>Message sent successfully!</div>";
+
+            } catch (Exception $e) {
+                $_SESSION['errorMessage'] =
+                    "<div class='message error'>Message could not be sent.</div>";
+            }
+
+            header("Location: index.php?id=$getMemberId");
+            exit();
         }
 ?>
 <!DOCTYPE html>
@@ -112,7 +123,7 @@
                             <td width="140"><b>Cc:</b></td>
                             <td>
                                 <select name="EmailsCC[]" class="selectEmails" multiple>
-                                    <option value="montezbhsfbla@gmail.com">montezbhsfbla@gmail.com</option>
+                                    <option value="anastasiabhsfbla@gmail.com">anastasiabhsfbla@gmail.com</option>
                                     <option value="smalleys@bcsdschools.net">smalleys@bcsdschools.net</option>
                                     <option value="lampkinl@bcsdschools.net">lampkinl@bcsdschools.net</option>
                                 </select>
