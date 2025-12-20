@@ -112,7 +112,6 @@
                             "<div class='message error'>Probation updated, but email could not be sent.</div>";
                     }
                 }
-
             } else {
                 $_SESSION['errorMessage'] =
                     "<div class='message error'>Something went wrong. Please try again.</div>";

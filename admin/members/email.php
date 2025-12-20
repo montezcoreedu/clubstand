@@ -64,7 +64,6 @@
 
                 $_SESSION['successMessage'] =
                     "<div class='message success'>Message sent successfully!</div>";
-
             } catch (Exception $e) {
                 $_SESSION['errorMessage'] =
                     "<div class='message error'>Message could not be sent.</div>";

@@ -79,13 +79,11 @@
                     $_SESSION['successMessage'] = "<div class='message success'>Termination successfully recorded and member status updated.</div>";
                     header("Location: ../members/membership.php?id=$getMemberId");
                     exit();
-
                 } else {
                     $_SESSION['errorMessage'] = "<div class='message error'>Termination recorded, but failed to update member status.</div>";
                     header("Location: ../members/membership.php?id=$getMemberId");
                     exit();
                 }
-
             } else {
                 $_SESSION['errorMessage'] = "<div class='message error'>Failed to record termination. Please try again.</div>";
                 header("Location: ../members/membership.php?id=$getMemberId");
