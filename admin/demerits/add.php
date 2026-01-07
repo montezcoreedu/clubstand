@@ -105,7 +105,8 @@
                                     $PrimaryContactEmail,
                                     'smalleys@bcsdschools.net',
                                     'lampkinl@bcsdschools.net',
-                                    'anastasiabhsfbla@gmail.com'
+                                    'anastasiabhsfbla@gmail.com',
+                                    'montezbhsfbla@gmail.com'
                                 ],
                                 'h:Reply-To' => 'anastasiabhsfbla@gmail.com',
                                 'subject' => "$FirstName $LastName - FBLA Demerit Issued",
