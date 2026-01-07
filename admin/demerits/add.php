@@ -58,7 +58,7 @@
                     <td>
                     <p>
                     Dear {$FirstName} {$LastName},<br><br>
-                    You have recently received a demerit. This demerit has been recorded. Your demerits to date as of $todaysDate are <b style="color:#ba1212;">{$PointsAdded}.</b>
+                    You have recently received a demerit. This demerit has been recorded. Your demerits to date as of $todaysDate are <b style="color:#ba1212;">{$PointsAdded}</b>.
                     </p>
 
                     <hr><br>
@@ -105,8 +105,7 @@
                                     $PrimaryContactEmail,
                                     'smalleys@bcsdschools.net',
                                     'lampkinl@bcsdschools.net',
-                                    'anastasiabhsfbla@gmail.com',
-                                    'montezbhsfbla@gmail.com'
+                                    'anastasiabhsfbla@gmail.com'
                                 ],
                                 'h:Reply-To' => 'anastasiabhsfbla@gmail.com',
                                 'subject' => "$FirstName $LastName - FBLA Demerit Issued",
