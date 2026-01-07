@@ -48,7 +48,7 @@
                 if ($sendEmail) {
                     $ReceivedDate = date('n/j/Y', strtotime($_POST['DemeritDate']));
                     $PointsAdded = (int)$points['CumulativePoints'] + $demeritPoints;
-                    $todaysDate = date('n/j/Y');
+                    $todaysDate = date('F j, Y');
 
                     $mailBodyHtml = <<<HTML
                     <table align="center" cellpadding="3" cellspacing="1"
@@ -58,7 +58,7 @@
                     <td>
                     <p>
                     Dear {$FirstName} {$LastName},<br><br>
-                    You have recently received a demerit. This demerit has been recorded. Your demerits to date as of $todaysDate are <b style="color:#ba1212;">{$PointsAdded}</b>.
+                    You have recently received a demerit, which has been recorded. As of $todaysDate, you now have a total of <b style="color:#ba1212;">{$PointsAdded}</b> demerit point(s).
                     </p>
 
                     <hr><br>
