@@ -11,12 +11,10 @@
     $where = [];
     $order = "ORDER BY LastName asc, FirstName asc";
 
-    // Helper function to sanitize inputs
     function clean($value, $conn) {
         return mysqli_real_escape_string($conn, trim($value));
     }
 
-    // Handle and convert date inputs
     $fromDateRaw = isset($_GET['FromDate']) ? clean($_GET['FromDate'], $conn) : '';
     $toDateRaw = isset($_GET['ToDate']) ? clean($_GET['ToDate'], $conn) : '';
     $fromDate = '';
@@ -35,7 +33,6 @@
         }
     }
 
-    // Date range logic
     if (!empty($fromDate) && !empty($toDate)) {
         $where[] = "DemeritDate BETWEEN '$fromDate' AND '$toDate'";
     } else {
@@ -47,14 +44,12 @@
         }
     }
 
-    // Other filters
     $demeritCategory = isset($_GET['Demerit']) ? clean($_GET['Demerit'], $conn) : '';
     $demeritPoints = isset($_GET['DemeritPoints']) ? intval($_GET['DemeritPoints']) : '';
     $memberQuery = isset($_GET['MemberQuery']) ? clean($_GET['MemberQuery'], $conn) : '';
     $sortBy = isset($_GET['SortBy']) ? clean($_GET['SortBy'], $conn) : '';
     $status = isset($_GET['Status']) ? clean($_GET['Status'], $conn) : '';
 
-    // Apply filters if values are present
     if (!empty($demeritCategory)) {
         $where[] = "Demerit = '$demeritCategory'";
     }
@@ -65,10 +60,9 @@
         $where[] = "(CONCAT(m.LastName, ', ', m.FirstName, ' ', m.Suffix) LIKE '%$memberQuery%')";
     }
 
-    // Always limit to active members
     $where[] = "(m.MemberStatus IN (1, 2))";
+    $where[] = "d.Archived = 0";
 
-    // Sorting options
     switch ($sortBy) {
         case "date_asc":
             $order = "ORDER BY DemeritDate asc";
@@ -81,19 +75,12 @@
             break;
     }
 
-    // Build WHERE clause
     $whereClause = count($where) > 0 ? "WHERE " . implode(" AND ", $where) : "";
 
-    // Final SQL query
     $sql = "SELECT * FROM demerits d INNER JOIN members m ON d.MemberId = m.MemberId $whereClause $order";
 
-    // Debug: Optional
-    // error_log("Demerit SQL: " . $sql);
-
-    // Run the query
     $result = $conn->query($sql);
 
-    // CSV Export
     if (isset($_POST['export_csv'])) {
         $csvResult = $conn->query($sql);
 
