@@ -26,7 +26,8 @@
 
         $points_sql = "SELECT SUM(DemeritPoints) AS CumulativePoints 
                     FROM demerits 
-                    WHERE MemberId = $getMemberId";
+                    WHERE MemberId = $getMemberId
+                    AND Archived = 0";
         $points_query = $conn->query($points_sql);
         $points = mysqli_fetch_assoc($points_query);
 
