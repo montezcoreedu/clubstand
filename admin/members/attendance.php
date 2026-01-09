@@ -21,7 +21,7 @@
         $excuses_result = $conn->query($excuses_query);
 
         // Attendance Percentage
-        $attpercentage_query = "SELECT ROUND((SELECT COUNT(*) FROM attendance WHERE (Status = 'Present' OR Status = 'Excused') AND MemberId = $getMemberId AND Archived = 0) * 100 / COUNT(*)) AS AttPercentage FROM attendance WHERE MemberId = $getMemberId";
+        $attpercentage_query = "SELECT CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(SUM(CASE WHEN Status = 'Present' THEN 1 WHEN Status = 'Excused' THEN 0.5 ELSE 0 END)/COUNT(*)*100) END AS AttPercentage FROM attendance WHERE MemberId = $getMemberId AND Archived = 0";
         $attpercentage_result = $conn->query($attpercentage_query);
         $att_percent = mysqli_fetch_assoc($attpercentage_result);
 
