@@ -104,7 +104,7 @@
             $attendancePercent = ($totalMeetings > 0) ? ($presentCount / $totalMeetings) * 100 : 0;
 
             // Service Hours
-            $serviceQuery = "SELECT SUM(ServiceHours) as totalHours FROM memberservicehours m INNER JOIN communityservices s ON m.ServiceId = s.ServiceId WHERE MemberId = ? AND ServiceDate BETWEEN ? AND ? AND Archived = 0";
+            $serviceQuery = "SELECT SUM(ServiceHours) as totalHours FROM memberservicehours m INNER JOIN communityservices s ON m.ServiceId = s.ServiceId WHERE MemberId = ? AND ServiceDate BETWEEN ? AND ? AND m.Archived = 0 AND s.Archived = 0";
             $stmt = $conn->prepare($serviceQuery);
             $stmt->bind_param("iss", $memberId, $startDate, $endDate);
             $stmt->execute();
