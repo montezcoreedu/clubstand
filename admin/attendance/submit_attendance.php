@@ -126,7 +126,7 @@
                             $mg->messages()->send($mailgunDomain, [
                                 'from'    => $chapter['ChapterName'] . " Attendance <no-reply@corecommunication.org>",
                                 'to'      => $EmailAddress,
-                                'reply-to'=> 'anastasiabhsfbla@gmail.com',
+                                'reply-to'=> 'bhsfblamembership@gmail.com',
                                 'subject' => $subject,
                                 'html'    => "
                                     <table align='center' style='font-family: Times New Roman; font-size: 16px; max-width: 720px;'>
@@ -136,8 +136,8 @@
                                                 <hr style='margin:20px 0;'>
                                                 <p>
                                                     If this was in error, contact 
-                                                    <a href='mailto:anastasiabhsfbla@gmail.com'>
-                                                        anastasiabhsfbla@gmail.com
+                                                    <a href='mailto:bhsfblamembership@gmail.com'>
+                                                        bhsfblamembership@gmail.com
                                                     </a>.
                                                 </p>
                                                 <p>

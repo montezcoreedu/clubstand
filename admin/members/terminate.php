@@ -65,7 +65,7 @@
                                 'from'    => $chapter['ChapterName'].' ByLaw Committee <no-reply@corecommunication.org>',
                                 'to'      => $EmailAddress,
                                 'cc'      => [$PrimaryContactEmail, 'smalleys@bcsdschools.net', 'lampkinl@bcsdschools.net',
-                                'anastasiabhsfbla@gmail.com'],
+                                'bhsfblamembership@gmail.com'],
                                 'subject' => $subject,
                                 'html'    => $body,
                             ]);

@@ -130,7 +130,7 @@
                             'reply-to' => [
                                 'smalleys@bcsdschools.net',
                                 'lampkinl@bcsdschools.net',
-                                'anastasiabhsfbla@gmail.com'
+                                'bhsfblamembership@gmail.com'
                             ],
                             'subject' => "{$FirstName} {$LastName} - FBLA Probation Report",
                             'html' => $emailHtml

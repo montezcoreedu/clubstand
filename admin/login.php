@@ -37,10 +37,12 @@
             margin-bottom: 0;
         }
 
-        .message {
+        .feedback {
             border-left: 4px solid;
             padding: 6px 10px;
             margin-bottom: 1rem;
+            border-left-color: rgb(148, 104, 3);
+            background-color: rgb(243, 236, 187);
         }
 
         .error {
@@ -137,7 +139,7 @@
             }
         ?>
         <?php if (isset($_GET['timeout'])): ?>
-            <div class="message error">You’ve been logged out due to inactivity.</div>
+            <div class="message error">You've been logged out due to inactivity.</div>
         <?php endif; ?>
         <form action="authenticate.php" method="POST">
             <div class="form-group">

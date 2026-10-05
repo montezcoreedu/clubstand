@@ -85,7 +85,7 @@
                     <br><hr>
 
                     If you identify any errors or have questions, please contact
-                    <a href="mailto:anastasiabhsfbla@gmail.com">anastasiabhsfbla@gmail.com</a>.<br><br>
+                    <a href="mailto:bhsfblamembership@gmail.com">bhsfblamembership@gmail.com</a>.<br><br>
 
                     Thanks,<br>
                     {$chapter['ChapterName']}
@@ -105,9 +105,9 @@
                                     $PrimaryContactEmail,
                                     'smalleys@bcsdschools.net',
                                     'lampkinl@bcsdschools.net',
-                                    'anastasiabhsfbla@gmail.com'
+                                    'bhsfblamembership@gmail.com'
                                 ],
-                                'h:Reply-To' => 'anastasiabhsfbla@gmail.com',
+                                'h:Reply-To' => 'bhsfblamembership@gmail.com',
                                 'subject' => "$FirstName $LastName - FBLA Demerit Issued",
                                 'html' => $mailBodyHtml
                             ]

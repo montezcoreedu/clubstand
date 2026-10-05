@@ -42,7 +42,7 @@
                     'reply-to' => [
                         'smalleys@bcsdschools.net',
                         'lampkinl@bcsdschools.net',
-                        'anastasiabhsfbla@gmail.com'
+                        'bhsfblamembership@gmail.com'
                     ],
                     'subject' => $subject,
                     'html' => "
@@ -122,7 +122,7 @@
                             <td width="140"><b>Cc:</b></td>
                             <td>
                                 <select name="EmailsCC[]" class="selectEmails" multiple>
-                                    <option value="anastasiabhsfbla@gmail.com">anastasiabhsfbla@gmail.com</option>
+                                    <option value="bhsfblamembership@gmail.com">bhsfblamembership@gmail.com</option>
                                     <option value="smalleys@bcsdschools.net">smalleys@bcsdschools.net</option>
                                     <option value="lampkinl@bcsdschools.net">lampkinl@bcsdschools.net</option>
                                 </select>

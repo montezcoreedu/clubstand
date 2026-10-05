@@ -43,8 +43,8 @@
                         <p>
                             If you would like a copy of your demerit records,
                             please contact
-                            <a href='mailto:anastasiabhsfbla@gmail.com'>
-                                anastasiabhsfbla@gmail.com
+                            <a href='mailto:bhsfblamembership@gmail.com'>
+                                bhsfblamembership@gmail.com
                             </a>.
                         </p>
 
@@ -78,7 +78,7 @@
                 'reply-to' => [
                     'smalleys@bcsdschools.net',
                     'lampkinl@bcsdschools.net',
-                    'anastasiabhsfbla@gmail.com'
+                    'bhsfblamembership@gmail.com'
                 ],
                 'subject' => "{$FirstName} {$LastName} - FBLA Probation Warning",
                 'html' => $emailHtml

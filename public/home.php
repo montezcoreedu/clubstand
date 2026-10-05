@@ -16,34 +16,34 @@
     $member = $result->fetch_assoc();
 
     // Attendance DB
-    $attendance_query = "SELECT MeetingDate, Status FROM attendance WHERE MemberId = $memberId ORDER BY MeetingDate desc";
+    $attendance_query = "SELECT MeetingDate, Status FROM attendance WHERE MemberId = $memberId AND Archive = 0 ORDER BY MeetingDate desc";
     $attendance_result = $conn->query($attendance_query);
 
     // Attendance Percentage
-    $attpercentage_query = "SELECT ROUND((SELECT COUNT(*) FROM attendance WHERE (Status = 'Present' OR Status = 'Excused') AND MemberId = $memberId) * 100 / COUNT(*)) AS AttPercentage FROM attendance WHERE MemberId = $memberId";
+    $attpercentage_query = "SELECT ROUND((SELECT COUNT(*) FROM attendance WHERE (Status = 'Present' OR Status = 'Excused') AND MemberId = $memberId AND Archive = 0) * 100 / COUNT(*)) AS AttPercentage FROM attendance WHERE MemberId = $memberId AND Archive = 0";
     $attpercentage_result = $conn->query($attpercentage_query);
     $att_percent = mysqli_fetch_assoc($attpercentage_result);
 
     // Demerits DB
-    $demerits_query = "SELECT DemeritDate, Demerit, DemeritDescription, DemeritPoints FROM demerits WHERE MemberId = $memberId ORDER BY DemeritDate desc";
+    $demerits_query = "SELECT DemeritDate, Demerit, DemeritDescription, DemeritPoints FROM demerits WHERE MemberId = $memberId AND Archive = 0 ORDER BY DemeritDate desc";
     $demerits_result = $conn->query($demerits_query);
 
     // Cumulative Demerit Points DB
-    $pointsdemerits_sql = "SELECT COALESCE(SUM(DemeritPoints), 0) AS CumulativePoints FROM demerits WHERE MemberId = $memberId";
+    $pointsdemerits_sql = "SELECT COALESCE(SUM(DemeritPoints), 0) AS CumulativePoints FROM demerits WHERE MemberId = $memberId AND Archive = 0";
     $pointsdemerits_query = $conn->query($pointsdemerits_sql);
     $demerit_count = mysqli_fetch_assoc($pointsdemerits_query);
 
     // Community Services DB
-    $services_query = "SELECT m.ServiceHours, c.ServiceName, c.ServiceDate, c.ServiceType FROM memberservicehours m INNER JOIN communityservices c ON m.ServiceId = c.ServiceId WHERE MemberId = $memberId ORDER BY c.ServiceDate desc";
+    $services_query = "SELECT m.ServiceHours, c.ServiceName, c.ServiceDate, c.ServiceType FROM memberservicehours m INNER JOIN communityservices c ON m.ServiceId = c.ServiceId WHERE MemberId = $memberId AND m.Archive = 0 ORDER BY c.ServiceDate desc";
     $services_result = $conn->query($services_query);
 
     // Cumulative Service Hours DB
-    $internal_progress_sql = "SELECT SUM(ServiceHours) AS ServiceHours FROM memberservicehours WHERE MemberId = $memberId";
+    $internal_progress_sql = "SELECT SUM(ServiceHours) AS ServiceHours FROM memberservicehours WHERE MemberId = $memberId AND Archive = 0";
     $internal_progress_query = $conn->query($internal_progress_sql);
     $internal_progress = mysqli_fetch_assoc($internal_progress_query);
     $internal_hours = $internal_progress['ServiceHours'] ?? 0;
 
-    $transfer_progress_sql = "SELECT SUM(ServiceHours) AS ServiceHours FROM membertransferhours WHERE MemberId = $memberId";
+    $transfer_progress_sql = "SELECT SUM(ServiceHours) AS ServiceHours FROM membertransferhours WHERE MemberId = $memberId AND Archive = 0";
     $transfer_progress_query = $conn->query($transfer_progress_sql);
     $transfer_progress = mysqli_fetch_assoc($transfer_progress_query);
     $transfer_hours = $transfer_progress['ServiceHours'] ?? 0;
@@ -265,7 +265,7 @@
         <div class="column_box_light_gray">
             <h2>Have questions or need help?</h2>
             <h3>Connect with your membership coordinator by sending an email to</h3>
-            <a href="mailto:anastasiabhsfbla@gmail.com">anastasiabhsfbla@gmail.com</a>
+            <a href="mailto:bhsfblamembership@gmail.com">bhsfblamembership@gmail.com</a>
         </div>
     </div>
     <footer>
